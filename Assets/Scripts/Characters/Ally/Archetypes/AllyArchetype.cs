@@ -6,9 +6,13 @@ public class AllyArchetype : ScriptableObject
 {
     [SerializeField] private string archetypeName;
     [SerializeField] private List<AllyRestrictionRule> rules = new List<AllyRestrictionRule>();
+    [SerializeField] private Sprite icon;
+    [SerializeField] private StatCollection baseStats = new StatCollection();
 
     public string ArchetypeName => archetypeName;
     public IReadOnlyList<AllyRestrictionRule> Rules => rules;
+    public Sprite Icon => icon;
+    public StatCollection BaseStats => baseStats;
 
     public bool CanEquip(Ally ally, AllyEquipmentInventory inventory, Equipment equipment, out string failureReason)
     {

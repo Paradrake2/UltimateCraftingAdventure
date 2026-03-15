@@ -7,6 +7,21 @@ public class StatCollection
     [SerializeField] private List<StatValue> stats = new List<StatValue>();
     public IReadOnlyList<StatValue> Stats => stats;
 
+    public StatCollection Clone()
+    {
+        var copy = new StatCollection();
+        if (stats == null) return copy;
+
+        foreach (var statValue in stats)
+        {
+            if (statValue == null) continue;
+            if (statValue.Stat == null) continue;
+            copy.SetStat(statValue.Stat, statValue.Value);
+        }
+
+        return copy;
+    }
+
     public void SetStat(Stat stat, float value)
     {
         StatValue existingStat = stats.Find(s => s.Stat == stat);

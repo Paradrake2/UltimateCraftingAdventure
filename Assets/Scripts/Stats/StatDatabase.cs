@@ -7,17 +7,17 @@ using System.Collections.Generic;
 
 public class StatDatabase : ScriptableObject
 {
-    [SerializeField] private List<StatValue> stats = new List<StatValue>();
-    private Dictionary<string, StatValue> statDictionary;
+    [SerializeField] private List<Stat> stats = new List<Stat>();
+    private Dictionary<string, Stat> statDictionary;
     private void OnEnable()
     {
-        statDictionary = new Dictionary<string, StatValue>();
-        foreach (var statValue in stats)
+        statDictionary = new Dictionary<string, Stat>();
+        foreach (var stat in stats)
         {
-            statDictionary[statValue.Stat.StatName] = statValue;
+            statDictionary[stat.StatName] = stat;
         }
     }
-    public StatValue GetStatValue(string statName)
+    public Stat GetStat(string statName)
     {
         if (statDictionary.TryGetValue(statName, out var statValue))
         {
@@ -29,7 +29,7 @@ public class StatDatabase : ScriptableObject
             return null;
         }
     }
-    public IReadOnlyList<StatValue> Stats => stats.AsReadOnly();
+    public IReadOnlyList<Stat> Stats => stats.AsReadOnly();
     private static StatDatabase instance;
     public static StatDatabase Instance
     {

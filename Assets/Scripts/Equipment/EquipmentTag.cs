@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EquipmentTag", menuName = "Scriptable Objects/Equipment/Tag")]
+[CreateAssetMenu(fileName = "EquipmentTag", menuName = "Scriptable Objects/EquipmentTag")]
 public class EquipmentTag : ScriptableObject
 {
     [SerializeField] private string tagName;

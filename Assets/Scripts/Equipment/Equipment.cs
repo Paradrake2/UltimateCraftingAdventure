@@ -12,6 +12,41 @@ public enum EquipmentType
     Gloves,
     Accessory
 }
+public enum EquipmentRarity
+{
+    Common,
+    Uncommon,
+    Rare,
+    Epic,
+    Legendary,
+    Mythical,
+    Ultimate,
+    Godly
+}
+[System.Serializable]
+public class EquipmentStatModifier
+{
+    public EquipmentRarity rarity;
+    public float GetModifier(EquipmentRarity rarity)
+    {
+        switch (rarity)
+        {
+            case EquipmentRarity.Common: return 1f;
+            case EquipmentRarity.Uncommon: return 1.5f;
+            case EquipmentRarity.Rare: return 2f;
+            case EquipmentRarity.Epic: return 3;
+            case EquipmentRarity.Legendary: return 5f;
+            case EquipmentRarity.Mythical: return 6f;
+            case EquipmentRarity.Ultimate: return 7.5f;
+            case EquipmentRarity.Godly: return 10f;
+            default: return 1f;
+        }
+    }
+    public void SetRarity(EquipmentRarity newRarity)
+    {
+        rarity = newRarity;
+    }
+}
 
 [CreateAssetMenu(fileName = "Equipment", menuName = "Scriptable Objects/Equipment")]
 public class Equipment : ScriptableObject
@@ -21,17 +56,32 @@ public class Equipment : ScriptableObject
     [SerializeField] private StatCollection stats = new StatCollection();
     [SerializeField] private EquipmentType equipmentType;
     [SerializeField] private List<EquipmentTag> tags = new List<EquipmentTag>();
+    [SerializeField] private EquipmentStatModifier statModifier = new EquipmentStatModifier();
+    [SerializeField] private EquipmentRarity rarity;
+    [SerializeField] private EquipmentTag tag;
+    [SerializeField] private string id;
     public string EquipmentName => equipmentName;
     public Sprite Icon => icon;
     public StatCollection Stats => stats;
     public EquipmentType EquipmentType => equipmentType;
     public IReadOnlyList<EquipmentTag> Tags => tags;
-    public Equipment(string name, Sprite icon, StatCollection stats, EquipmentType equipmentType)
+    public EquipmentRarity Rarity => rarity;
+    public EquipmentStatModifier StatModifier => statModifier;
+    public EquipmentTag Tag => tag;
+    public string ID => id;
+    public Equipment(string name, Sprite icon, StatCollection stats, EquipmentType equipmentType, EquipmentRarity rarity)
     {
-        this.equipmentName = name;
+        equipmentName = name;
         this.icon = icon;
         this.stats = stats;
         this.equipmentType = equipmentType;
+        this.rarity = rarity;
+        ApplyModifier(rarity);
+        GenerateID();
+    }
+    public void SetTag(EquipmentTag newTag)
+    {
+        tag = newTag;
     }
     public void SetStats(StatCollection newStats)
     {
@@ -69,5 +119,17 @@ public class Equipment : ScriptableObject
             if (tags.Contains(requiredTag)) return true;
         }
         return false;
+    }
+    private void ApplyModifier(EquipmentRarity rarity)
+    {
+        float modifier = statModifier.GetModifier(rarity);
+        foreach (var statValue in stats.Stats)
+        {
+            statValue.SetValue(statValue.Value * modifier);
+        }
+    }
+    public void GenerateID()
+    {
+        id = System.Guid.NewGuid().ToString();
     }
 }

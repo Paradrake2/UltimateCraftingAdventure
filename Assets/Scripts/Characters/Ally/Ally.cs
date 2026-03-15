@@ -14,6 +14,34 @@ public class Ally : ScriptableObject
     public AllyArchetype Archetype => archetype;
     public AllyEquipmentInventory EquipmentInventory => equipmentInventory;
 
+    public void Initialize(string name, Sprite newIcon, StatCollection newStats, AllyArchetype newArchetype)
+    {
+        allyName = name;
+        icon = newIcon;
+        stats = newStats ?? new StatCollection();
+        archetype = newArchetype;
+
+        equipmentInventory ??= new AllyEquipmentInventory();
+    }
+
+    public static Ally CreateRuntime(string name, AllyArchetype archetype, Sprite icon = null, StatCollection stats = null)
+    {
+        var ally = CreateInstance<Ally>();
+
+        string resolvedName = string.IsNullOrWhiteSpace(name) ? "Ally" : name;
+        Sprite resolvedIcon = icon != null ? icon : archetype != null ? archetype.Icon : null;
+        StatCollection resolvedStats = stats ?? (archetype != null ? archetype.BaseStats.Clone() : new StatCollection());
+
+        ally.Initialize(resolvedName, resolvedIcon, resolvedStats, archetype);
+        return ally;
+    }
+    public Ally(string name, Sprite icon, StatCollection stats, AllyArchetype archetype)
+    {
+        allyName = name;
+        this.icon = icon;
+        this.stats = stats;
+        this.archetype = archetype;
+    }
     public bool TryEquip(Equipment equipment, out string failureReason)
     {
         failureReason = null;
