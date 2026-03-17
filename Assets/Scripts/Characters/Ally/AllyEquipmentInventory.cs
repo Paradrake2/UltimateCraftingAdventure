@@ -9,6 +9,8 @@ public class AllyEquipmentInventory
 	[SerializeField] private Equipment chestplate;
 	[SerializeField] private Equipment leggings;
 	[SerializeField] private Equipment boots;
+	[SerializeField] private Equipment gloves;
+	[SerializeField] private Equipment bracers;
 
 	[Header("Hands")]
 	[SerializeField] private Equipment handSlot1;
@@ -22,6 +24,9 @@ public class AllyEquipmentInventory
 	public Equipment Chestplate => chestplate;
 	public Equipment Leggings => leggings;
 	public Equipment Boots => boots;
+	public Equipment Gloves => gloves;
+	public Equipment Bracers => bracers;
+
 	public Equipment HandSlot1 => handSlot1;
 	public Equipment HandSlot2 => handSlot2;
 	public Equipment AccessorySlot1 => accessorySlot1;
@@ -33,6 +38,8 @@ public class AllyEquipmentInventory
 		if (chestplate != null) yield return chestplate;
 		if (leggings != null) yield return leggings;
 		if (boots != null) yield return boots;
+		if (gloves != null) yield return gloves;
+		if (bracers != null) yield return bracers;
 		if (handSlot1 != null) yield return handSlot1;
 		if (handSlot2 != null) yield return handSlot2;
 		if (accessorySlot1 != null) yield return accessorySlot1;
@@ -46,6 +53,8 @@ public class AllyEquipmentInventory
 			   || chestplate == equipment
 			   || leggings == equipment
 			   || boots == equipment
+			   || gloves == equipment
+			   || bracers == equipment
 			   || handSlot1 == equipment
 			   || handSlot2 == equipment
 			   || accessorySlot1 == equipment
@@ -96,7 +105,21 @@ public class AllyEquipmentInventory
 				}
 				leggings = equipment;
 				return true;
-
+			case EquipmentType.Bracers:
+				if (bracers != null)
+				{
+					failureReason = "Cannot equip: bracers slot already filled.";
+					return false;
+				}
+				bracers = equipment;
+				return true;
+			case EquipmentType.Gloves:
+				if (gloves != null)				{
+					failureReason = "Cannot equip: gloves slot already filled.";
+					return false;
+				}
+				gloves = equipment;
+				return true;
 			case EquipmentType.Boots:
 				if (boots != null)
 				{
@@ -138,6 +161,10 @@ public class AllyEquipmentInventory
 		if (chestplate == equipment) { chestplate = null; return true; }
 		if (leggings == equipment) { leggings = null; return true; }
 		if (boots == equipment) { boots = null; return true; }
+		if (gloves == equipment) { gloves = null; return true; }
+		if (bracers == equipment) { bracers = null; return true; }
+		if (leggings == equipment) { leggings = null; return true; }
+		if (boots == equipment) { boots = null; return true; }
 		if (handSlot1 == equipment) { handSlot1 = null; return true; }
 		if (handSlot2 == equipment) { handSlot2 = null; return true; }
 		if (accessorySlot1 == equipment) { accessorySlot1 = null; return true; }
@@ -170,6 +197,14 @@ public class AllyEquipmentInventory
 			case EquipmentType.Boots:
 				unequipped = boots;
 				boots = null;
+				return unequipped != null;
+			case EquipmentType.Gloves:
+				unequipped = gloves;
+				gloves = null;
+				return unequipped != null;
+			case EquipmentType.Bracers:
+				unequipped = bracers;
+				bracers = null;
 				return unequipped != null;
 
 			case EquipmentType.Accessory:

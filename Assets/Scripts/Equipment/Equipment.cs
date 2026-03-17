@@ -10,6 +10,7 @@ public enum EquipmentType
     Leggings,
     Boots,
     Gloves,
+    Bracers,
     Accessory
 }
 public enum EquipmentRarity
