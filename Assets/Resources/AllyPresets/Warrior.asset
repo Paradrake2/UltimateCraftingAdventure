@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: 
   iconOverride: {fileID: -5967562619467940673, guid: 8bf817f1b708bc94ea0478ee10093f99, type: 3}
-  defaultName: Wizard
+  defaultName: Warrior
   archetype: {fileID: 11400000, guid: f75e85c2a606dcd438e502229aa66b98, type: 2}
   statsOverride:
     stats: []
-  startingEquipment: []
+  startingEquipment:
+  - {fileID: 11400000, guid: a05481dbaf00287448dc17a6ff0220f8, type: 2}

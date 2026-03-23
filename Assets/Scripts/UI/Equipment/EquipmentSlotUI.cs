@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EquipmentSlotUI : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class EquipmentSlotUI : MonoBehaviour
     public void SetEquipment(Equipment equipment)
     {
         this.equipment = equipment;
-        sprite = equipment != null ? equipment.Icon : baseSprite;
+        GetComponent<Image>().sprite = equipment != null ? equipment.Icon : baseSprite;
     }
     public Equipment GetEquipment()
     {
@@ -17,7 +18,7 @@ public class EquipmentSlotUI : MonoBehaviour
     public void ClearEquipment()
     {
         equipment = null;
-        sprite = baseSprite;
+        GetComponent<Image>().sprite = baseSprite;
     }
 
     void Start()

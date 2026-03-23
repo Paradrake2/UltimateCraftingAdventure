@@ -18,6 +18,7 @@ public class EquipmentInventoryUI : MonoBehaviour
         {
             inventory = EquipmentInventory.Instance;
         }
+        PopulateInventory();
     }
 
     // Update is called once per frame

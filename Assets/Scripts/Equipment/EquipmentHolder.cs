@@ -32,6 +32,7 @@ public class EquipmentHolder : MonoBehaviour
             }
         }
     }
+    public EquipmentHolderUI UI => ui;
     public void Equip(Equipment equipment)
     {
         

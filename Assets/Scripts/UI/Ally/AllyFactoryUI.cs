@@ -132,7 +132,7 @@ public class AllyFactoryUI : MonoBehaviour
 
         if (allyManager == null) allyManager = AllyManager.Instance;
         allyManager.AddAlly(ally);
-
+        allyManager.SwitchAlly(ally);
         CloseMenu();
         FindAnyObjectByType<AllyListContainer>().PopulateAllyList();
     }

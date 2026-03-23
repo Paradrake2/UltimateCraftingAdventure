@@ -10,14 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0488d86356b5cf9428c49f70665ed138, type: 3}
-  m_Name: StarterSword
+  m_Name: StarterWand
   m_EditorClassIdentifier: 
-  equipmentName: StarterSword
-  icon: {fileID: 8202703598068382869, guid: 8e4f6440d60ad27468055cb2ce3ff637, type: 3}
+  equipmentName: 
+  icon: {fileID: 0}
   stats:
-    stats:
-    - stat: {fileID: 11400000, guid: 30d55cc49b243fc4ebb358d952dca8cb, type: 2}
-      value: 2
+    stats: []
   equipmentType: 0
   tags: []
   statModifier:

@@ -25,7 +25,15 @@ public class AllyManager : MonoBehaviour
     public void SwitchAlly(Ally newAlly)
     {
         currentAlly = newAlly;
+        Debug.Log("Switched to ally: " + (currentAlly != null ? currentAlly.name : "None"));
         // load equipment, skills, stats, etc
+        PopulateAllyEquipment(currentAlly);
+    }
+    private void PopulateAllyEquipment(Ally ally)
+    {
+        if (ally == null) return;
+        Debug.Log("Populating equipment for ally: " + ally.name);
+        EquipmentHolder.Instance.UI.PopulateSlots(ally.EquipmentInventory);
     }
     public void AddAlly(Ally ally)
     {

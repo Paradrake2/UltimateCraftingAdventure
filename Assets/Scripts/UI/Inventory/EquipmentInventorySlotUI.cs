@@ -26,6 +26,6 @@ public class EquipmentInventorySlotUI : MonoBehaviour
     }
     public void OnClick()
     {
-        
+        AllyManager.Instance.currentAlly.EquipmentInventory.TryEquip(equipment, out _);
     }
 }
