@@ -116,10 +116,28 @@ public static class AllyFactory
     {
         if (ally == null || equipment == null) return;
 
+        // See AllyEquipmentInventory.TryEquipToHands: shields require an already-equipped weapon.
+        // Equip weapons first, then shields, then everything else.
+        TryEquipByType(ally, equipment, EquipmentType.Weapon);
+        TryEquipByType(ally, equipment, EquipmentType.Shield);
+
         for (int i = 0; i < equipment.Count; i++)
         {
             var item = equipment[i];
             if (item == null) continue;
+            if (item.EquipmentType == EquipmentType.Weapon) continue;
+            if (item.EquipmentType == EquipmentType.Shield) continue;
+            ally.TryEquip(item, out _);
+        }
+    }
+
+    private static void TryEquipByType(Ally ally, IReadOnlyList<Equipment> equipment, EquipmentType equipmentType)
+    {
+        for (int i = 0; i < equipment.Count; i++)
+        {
+            var item = equipment[i];
+            if (item == null) continue;
+            if (item.EquipmentType != equipmentType) continue;
             ally.TryEquip(item, out _);
         }
     }

@@ -173,7 +173,7 @@ public class AllyEquipmentInventory
 		return false;
 	}
 
-	public bool TryUnequip(EquipmentType equipmentType, out Equipment unequipped) 
+	public bool TryUnequip(EquipmentType equipmentType, out Equipment unequipped)
 	{
 		unequipped = null;
 

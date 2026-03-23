@@ -9,23 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b9d7517302f1824da24d5e1c6f64bdb, type: 3}
+  m_Script: {fileID: 11500000, guid: f3df02a3ba3e0ab4784f27824b4e4907, type: 3}
   m_Name: Warrior
   m_EditorClassIdentifier: 
-  archetypeName: Warrior
-  rules:
-  - {fileID: 11400000, guid: d9e684a2dfa6b7a41a2892b9b1a9dcf5, type: 2}
-  - {fileID: 11400000, guid: 160fbd625b1c5af49b82a2419a1e98be, type: 2}
-  icon: {fileID: 0}
-  baseStats:
-    stats:
-    - stat: {fileID: 11400000, guid: 72d4fcf6b9234a34c80fafaa5a19026c, type: 2}
-      value: 100
-    - stat: {fileID: 11400000, guid: 044072aab872c4a4481055ac7d4263c9, type: 2}
-      value: 5
-    - stat: {fileID: 11400000, guid: 30d55cc49b243fc4ebb358d952dca8cb, type: 2}
-      value: 10
-    - stat: {fileID: 11400000, guid: b59dbb9fbc6cdd0479478d7f5cf4254b, type: 2}
-      value: 1
-    - stat: {fileID: 11400000, guid: ea72a39cd1f488a4da182982e8b21701, type: 2}
-      value: 0
+  displayName: 
+  iconOverride: {fileID: -5967562619467940673, guid: 8bf817f1b708bc94ea0478ee10093f99, type: 3}
+  defaultName: Wizard
+  archetype: {fileID: 11400000, guid: f75e85c2a606dcd438e502229aa66b98, type: 2}
+  statsOverride:
+    stats: []
+  startingEquipment: []

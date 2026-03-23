@@ -1,0 +1,53 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class AllyManager : MonoBehaviour
+{
+    private static AllyManager instance;
+    public Ally currentAlly;
+    [SerializeField] private List<Ally> allies = new List<Ally>();
+    public static AllyManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindFirstObjectByType<AllyManager>();
+                if (instance == null)
+                {
+                    GameObject obj = new GameObject("AllyManager");
+                    instance = obj.AddComponent<AllyManager>();
+                }
+            }
+            return instance;
+        }
+    }
+    public void SwitchAlly(Ally newAlly)
+    {
+        currentAlly = newAlly;
+        // load equipment, skills, stats, etc
+    }
+    public void AddAlly(Ally ally)
+    {
+        if (ally == null) return;
+        if (allies == null) allies = new List<Ally>();
+        allies.Add(ally);
+    }
+    public void RemoveAlly(Ally ally)
+    {
+        allies.Remove(ally);
+        if (currentAlly == ally)
+        {
+            currentAlly = null;
+        }
+    }
+    public List<Ally> GetAllies()
+    {
+        return allies;
+    }
+
+    void Start()
+    {
+        
+    }
+}
