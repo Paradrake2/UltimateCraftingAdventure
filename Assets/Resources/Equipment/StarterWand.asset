@@ -12,14 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0488d86356b5cf9428c49f70665ed138, type: 3}
   m_Name: StarterWand
   m_EditorClassIdentifier: 
-  equipmentName: 
-  icon: {fileID: 0}
+  equipmentName: StarterWand
+  icon: {fileID: 2602289581836835513, guid: fbdb2823e76b40640b9139303b48ec15, type: 3}
   stats:
-    stats: []
+    stats:
+    - stat: {fileID: 11400000, guid: ea72a39cd1f488a4da182982e8b21701, type: 2}
+      value: 1
+    - stat: {fileID: 11400000, guid: 30d55cc49b243fc4ebb358d952dca8cb, type: 2}
+      value: 1
   equipmentType: 0
-  tags: []
+  tags:
+  - {fileID: 11400000, guid: 9395b1a8623a60a4da92d4424b7e2c78, type: 2}
   statModifier:
     rarity: 0
   rarity: 0
-  tag: {fileID: 0}
+  tag: {fileID: 11400000, guid: 9395b1a8623a60a4da92d4424b7e2c78, type: 2}
   id: 

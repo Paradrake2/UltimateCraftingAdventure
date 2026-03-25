@@ -19,9 +19,10 @@ MonoBehaviour:
     - stat: {fileID: 11400000, guid: 30d55cc49b243fc4ebb358d952dca8cb, type: 2}
       value: 2
   equipmentType: 0
-  tags: []
+  tags:
+  - {fileID: 11400000, guid: d7b2dd670b90e6041932fb2c32106cb0, type: 2}
   statModifier:
     rarity: 0
   rarity: 0
-  tag: {fileID: 0}
+  tag: {fileID: 11400000, guid: d7b2dd670b90e6041932fb2c32106cb0, type: 2}
   id: 

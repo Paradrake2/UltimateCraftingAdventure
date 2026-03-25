@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: MagicWeaponsOnly
   m_EditorClassIdentifier: 
   allowedWeaponTags:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 9395b1a8623a60a4da92d4424b7e2c78, type: 2}

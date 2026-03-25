@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class EquipmentSlotUI : MonoBehaviour
+
+public class EquipmentSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Equipment equipment;
     [SerializeField] private Sprite sprite;
@@ -19,6 +21,17 @@ public class EquipmentSlotUI : MonoBehaviour
     {
         equipment = null;
         GetComponent<Image>().sprite = baseSprite;
+    }
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        // show tooltip with equipment info
+        UIHoverManager.Instance.DisplayEquipmentTooltip(equipment, transform.position);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        // hide tooltip
+        UIHoverManager.Instance.HideTooltip();
     }
 
     void Start()

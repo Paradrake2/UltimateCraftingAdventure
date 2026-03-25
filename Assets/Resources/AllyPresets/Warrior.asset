@@ -20,3 +20,4 @@ MonoBehaviour:
     stats: []
   startingEquipment:
   - {fileID: 11400000, guid: a05481dbaf00287448dc17a6ff0220f8, type: 2}
+  - {fileID: 11400000, guid: 6909b5c9caeeb2c4484ccc91202a514b, type: 2}

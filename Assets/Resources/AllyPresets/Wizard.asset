@@ -18,4 +18,5 @@ MonoBehaviour:
   archetype: {fileID: 11400000, guid: c78e8de5d489556458c23909f6b63c02, type: 2}
   statsOverride:
     stats: []
-  startingEquipment: []
+  startingEquipment:
+  - {fileID: 11400000, guid: 0da6ef90e1e85764491b668a9b7e26fa, type: 2}

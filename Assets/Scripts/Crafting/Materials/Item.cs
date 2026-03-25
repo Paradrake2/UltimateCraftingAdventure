@@ -1,6 +1,8 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Item", menuName = "Scriptable Objects/Item")]
+// These items are for crafting. They are used in recipes
+
+[CreateAssetMenu(fileName = "Item", menuName = "Crafting/Item")]
 public class Item : ScriptableObject
 {
     [SerializeField] private string itemName;
