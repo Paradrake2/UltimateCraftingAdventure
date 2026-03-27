@@ -3,21 +3,18 @@ using UnityEngine;
 public class EquipmentHolder : MonoBehaviour
 {
     [SerializeField] private EquipmentHolderUI ui;
-    private static EquipmentHolder instance;
-    public static EquipmentHolder Instance
+    private static EquipmentHolder _instance;
+    public static EquipmentHolder Instance => _instance;
+
+    private void Awake()
     {
-        get
+        if (_instance != null && _instance != this)
         {
-            if (instance == null)
-            {
-                instance = FindFirstObjectByType<EquipmentHolder>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject("EquipmentHolder");
-                    instance = obj.AddComponent<EquipmentHolder>();
-                }
-            }
-            return instance;
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            _instance = this;
         }
     }
 

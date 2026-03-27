@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CurrencyDisplayerUI : MonoBehaviour
 {
-    private static CurrencyDisplayerUI instance;
+    private static CurrencyDisplayerUI _instance;
     public GameObject goldDisplay;
     public GameObject soulsDisplay;
 
@@ -31,32 +31,17 @@ public class CurrencyDisplayerUI : MonoBehaviour
             }
         }
     }
-    public static CurrencyDisplayerUI Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindFirstObjectByType<CurrencyDisplayerUI>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject("CurrencyDisplayerUI");
-                    instance = obj.AddComponent<CurrencyDisplayerUI>();
-                }
-            }
-            return instance;
-        }
-    }
+    public static CurrencyDisplayerUI Instance => _instance;
 
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (_instance != null && _instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        instance = this;
+        _instance = this;
         DontDestroyOnLoad(gameObject);
     }
 

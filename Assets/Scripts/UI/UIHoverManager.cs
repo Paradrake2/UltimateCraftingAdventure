@@ -3,23 +3,21 @@ using UnityEngine;
 public class UIHoverManager : MonoBehaviour
 {
     [SerializeField] private GameObject tooltipPrefab;
-    private static UIHoverManager instance;
-    public static UIHoverManager Instance
+    private static UIHoverManager _instance;
+    public static UIHoverManager Instance => _instance;
+
+    private void Awake()
     {
-        get
+        if (_instance != null && _instance != this)
         {
-            if (instance == null)
-            {
-                instance = FindFirstObjectByType<UIHoverManager>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject("UIHoverManager");
-                    instance = obj.AddComponent<UIHoverManager>();
-                }
-            }
-            return instance;
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            _instance = this;
         }
     }
+
     public void DisplayEquipmentTooltip(Equipment equipment, Vector3 position)
     {
         if (tooltipPrefab == null)

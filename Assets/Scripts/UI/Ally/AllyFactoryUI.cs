@@ -43,13 +43,6 @@ public class AllyFactoryUI : MonoBehaviour
         CloseMenu();
     }
     
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void OpenMenu()
     {
         if (menuRoot != null) menuRoot.SetActive(true);
@@ -71,7 +64,7 @@ public class AllyFactoryUI : MonoBehaviour
         if (nameEntryRoot != null) nameEntryRoot.SetActive(false);
         if (nameInput != null) nameInput.text = string.Empty;
     }
-
+    // TODO: Bring up icon select so player can choose between default icon and custom icon for their character
     public void SelectPreset(AllyPreset preset)
     {
         if (preset == null) return;
@@ -95,6 +88,7 @@ public class AllyFactoryUI : MonoBehaviour
 
     private void RefreshPresetList()
     {
+        Debug.Log("Refreshing preset list UI...");
         if (presetListContent == null || presetButtonPrefab == null) return;
 
         for (int i = presetListContent.childCount - 1; i >= 0; i--)

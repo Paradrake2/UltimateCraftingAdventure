@@ -3,25 +3,23 @@ using UnityEngine;
 
 public class AllyManager : MonoBehaviour
 {
-    private static AllyManager instance;
+    private static AllyManager _instance;
     public Ally currentAlly;
     [SerializeField] private List<Ally> allies = new List<Ally>();
-    public static AllyManager Instance
+    public static AllyManager Instance => _instance;
+
+    private void Awake()
     {
-        get
+        if (_instance != null && _instance != this)
         {
-            if (instance == null)
-            {
-                instance = FindFirstObjectByType<AllyManager>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject("AllyManager");
-                    instance = obj.AddComponent<AllyManager>();
-                }
-            }
-            return instance;
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            _instance = this;
         }
     }
+
     public void SwitchAlly(Ally newAlly)
     {
         currentAlly = newAlly;

@@ -2,41 +2,26 @@ using UnityEngine;
 
 public class WalletManager : MonoBehaviour
 {
-    private static WalletManager instance;
+    private static WalletManager _instance;
 
     [Header("Optional")]
     [Tooltip("If set, will be used by UI/code that wants to map currency ids back to Currency assets.")]
     [SerializeField] private CurrencyDatabase currencyDatabase;
 
-    public static WalletManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindFirstObjectByType<WalletManager>();
-                if (instance == null)
-                {
-                    var obj = new GameObject("WalletManager");
-                    instance = obj.AddComponent<WalletManager>();
-                }
-            }
-            return instance;
-        }
-    }
+    public static WalletManager Instance => _instance;
 
     public Wallet Wallet { get; private set; }
     public CurrencyDatabase CurrencyDb => currencyDatabase != null ? currencyDatabase : CurrencyDatabase.Instance;
 
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (_instance != null && _instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        instance = this;
+        _instance = this;
         DontDestroyOnLoad(gameObject);
 
         Wallet = new Wallet();

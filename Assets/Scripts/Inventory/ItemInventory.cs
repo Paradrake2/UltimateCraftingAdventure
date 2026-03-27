@@ -2,15 +2,17 @@ using UnityEngine;
 
 public class ItemInventory : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    private static ItemInventory _instance;
+    public static ItemInventory Instance => _instance;
 
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        
+        if (_instance != null && _instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        _instance = this;
     }
 }

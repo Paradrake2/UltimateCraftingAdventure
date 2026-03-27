@@ -3,25 +3,23 @@ using UnityEngine;
 
 public class EquipmentInventory : MonoBehaviour
 {
-    private static EquipmentInventory instance;
+    private static EquipmentInventory _instance;
     [SerializeField] private List<Equipment> ownedEquipment = new List<Equipment>();
     public IReadOnlyList<Equipment> OwnedEquipment => ownedEquipment;
-    public static EquipmentInventory Instance
+    public static EquipmentInventory Instance => _instance;
+
+    private void Awake()
     {
-        get
+        if (_instance != null && _instance != this)
         {
-            if (instance == null)
-            {
-                instance = FindFirstObjectByType<EquipmentInventory>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject("EquipmentInventory");
-                    instance = obj.AddComponent<EquipmentInventory>();
-                }
-            }
-            return instance;
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            _instance = this;
         }
     }
+
     public void AddEquipment(Equipment equipment)
     {
         ownedEquipment.Add(equipment);
