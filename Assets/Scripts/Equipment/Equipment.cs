@@ -61,6 +61,7 @@ public class Equipment : ScriptableObject
     [SerializeField] private EquipmentRarity rarity;
     [SerializeField] private EquipmentTag tag;
     [SerializeField] private string id;
+    [SerializeField] private List<EquipmentEnchantmentHolder> enchantments = new List<EquipmentEnchantmentHolder>();
     public string EquipmentName => equipmentName;
     public Sprite Icon => icon;
     public StatCollection Stats => stats;
@@ -70,6 +71,7 @@ public class Equipment : ScriptableObject
     public EquipmentStatModifier StatModifier => statModifier;
     public EquipmentTag Tag => tag;
     public string ID => id;
+    public IReadOnlyList<EquipmentEnchantmentHolder> Enchantments => enchantments;
     public Equipment(string name, Sprite icon, StatCollection stats, EquipmentType equipmentType, EquipmentRarity rarity)
     {
         equipmentName = name;
@@ -79,6 +81,13 @@ public class Equipment : ScriptableObject
         this.rarity = rarity;
         ApplyModifier(rarity);
         GenerateID();
+    }
+    private void OnEnable()
+    {
+        stats ??= new StatCollection();
+        tags ??= new List<EquipmentTag>();
+        statModifier ??= new EquipmentStatModifier();
+        enchantments ??= new List<EquipmentEnchantmentHolder>();
     }
     public void SetTag(EquipmentTag newTag)
     {
@@ -95,6 +104,10 @@ public class Equipment : ScriptableObject
     public float GetStatValue(string statName)
     {
         return stats.GetStatValue(statName);
+    }
+    public bool HasStat(Stat stat)
+    {
+        return stats.TryGetStatValue(stat, out _);
     }
     public void SetSprite(Sprite newIcon)
     {
@@ -133,4 +146,37 @@ public class Equipment : ScriptableObject
     {
         id = System.Guid.NewGuid().ToString();
     }
+    public void AddTag(EquipmentTag newTag)
+    {
+        if (newTag != null && !tags.Contains(newTag))
+        {
+            tags.Add(newTag);
+        }
+    }
+    public void ApplyStatModifier(Stat stat, float modifierAmount)
+    {
+        float newNum = stats.GetStatValue(stat) * modifierAmount;
+        stats.SetStat(stat, newNum);
+    }
+    public void ApplyEnchantments()
+    {
+        enchantments ??= new List<EquipmentEnchantmentHolder>();
+
+        foreach (var enchantmentHolder in enchantments)
+        {
+            if (enchantmentHolder.Enchantment != null && !enchantmentHolder.BeenUsed)
+            {
+                enchantmentHolder.Enchantment.Apply(this);
+                enchantmentHolder.MarkAsUsed();
+            }
+        }
+    }
+    public void AddEnchantment(Enchantment enchantment)
+    {
+        if (enchantment != null)
+        {
+            enchantments.Add(new EquipmentEnchantmentHolder(enchantment));
+        }
+    }
+
 }
