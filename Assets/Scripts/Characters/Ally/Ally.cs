@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Ally", menuName = "Scriptable Objects/Ally")]
+[CreateAssetMenu(fileName = "Ally", menuName = "Scriptable Objects/AllyCustom")]
 public class Ally : ScriptableObject
 {
     [SerializeField] private string allyName;
@@ -8,11 +8,13 @@ public class Ally : ScriptableObject
     [SerializeField] private StatCollection stats = new StatCollection();
     [SerializeField] private AllyArchetype archetype;
     [SerializeField] private AllyEquipmentInventory equipmentInventory = new AllyEquipmentInventory();
+    [SerializeField] private AllyCombat combatStats = new AllyCombat();
     public string AllyName => allyName;
     public Sprite Icon => icon;
     public StatCollection Stats => stats;
     public AllyArchetype Archetype => archetype;
     public AllyEquipmentInventory EquipmentInventory => equipmentInventory;
+    public AllyCombat CombatStats => combatStats;
 
     public void Initialize(string name, Sprite newIcon, StatCollection newStats, AllyArchetype newArchetype)
     {
@@ -22,6 +24,8 @@ public class Ally : ScriptableObject
         archetype = newArchetype;
 
         equipmentInventory ??= new AllyEquipmentInventory();
+        combatStats ??= new AllyCombat();
+    combatStats.Initialize(stats);
     }
 
     public static Ally CreateRuntime(string name, AllyArchetype archetype, Sprite icon = null, StatCollection stats = null)
@@ -93,6 +97,6 @@ public class Ally : ScriptableObject
     }
     public void RecalculateStats()
     {
-        // placeholder
+        combatStats?.Initialize(stats);
     }
 }

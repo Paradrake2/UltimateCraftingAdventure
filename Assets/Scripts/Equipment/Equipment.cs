@@ -62,6 +62,7 @@ public class Equipment : ScriptableObject
     [SerializeField] private EquipmentTag tag;
     [SerializeField] private string id;
     [SerializeField] private List<EquipmentEnchantmentHolder> enchantments = new List<EquipmentEnchantmentHolder>();
+    [SerializeField] private List<EquipmentAugmentHolder> augments = new List<EquipmentAugmentHolder>();
     public string EquipmentName => equipmentName;
     public Sprite Icon => icon;
     public StatCollection Stats => stats;
@@ -72,6 +73,7 @@ public class Equipment : ScriptableObject
     public EquipmentTag Tag => tag;
     public string ID => id;
     public IReadOnlyList<EquipmentEnchantmentHolder> Enchantments => enchantments;
+    public IReadOnlyList<EquipmentAugmentHolder> Augments => augments;
     public Equipment(string name, Sprite icon, StatCollection stats, EquipmentType equipmentType, EquipmentRarity rarity)
     {
         equipmentName = name;
@@ -88,6 +90,7 @@ public class Equipment : ScriptableObject
         tags ??= new List<EquipmentTag>();
         statModifier ??= new EquipmentStatModifier();
         enchantments ??= new List<EquipmentEnchantmentHolder>();
+        augments ??= new List<EquipmentAugmentHolder>();
     }
     public void SetTag(EquipmentTag newTag)
     {
@@ -176,6 +179,13 @@ public class Equipment : ScriptableObject
         if (enchantment != null)
         {
             enchantments.Add(new EquipmentEnchantmentHolder(enchantment));
+        }
+    }
+    public void AddAugment(Augment augment)
+    {
+        if (augment != null)
+        {
+            augments.Add(new EquipmentAugmentHolder(augment));
         }
     }
 

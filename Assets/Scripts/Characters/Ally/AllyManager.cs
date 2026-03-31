@@ -4,9 +4,12 @@ using UnityEngine;
 public class AllyManager : MonoBehaviour
 {
     private static AllyManager _instance;
+    // in combat, current ally is used for the one currently selected
     public Ally currentAlly;
     [SerializeField] private List<Ally> allies = new List<Ally>();
+    [SerializeField] private CombatParty combatParty = new CombatParty();
     public static AllyManager Instance => _instance;
+    public CombatParty CombatParty => combatParty;
 
     private void Awake()
     {
@@ -18,11 +21,14 @@ public class AllyManager : MonoBehaviour
         {
             _instance = this;
         }
+        DontDestroyOnLoad(this.gameObject);
+        combatParty ??= new CombatParty();
     }
 
     public void SwitchAlly(Ally newAlly)
     {
         currentAlly = newAlly;
+        currentAlly?.CombatStats?.Initialize(currentAlly.Stats);
         Debug.Log("Switched to ally: " + (currentAlly != null ? currentAlly.name : "None"));
         // load equipment, skills, stats, etc
         PopulateAllyEquipment(currentAlly);
@@ -37,11 +43,13 @@ public class AllyManager : MonoBehaviour
     {
         if (ally == null) return;
         if (allies == null) allies = new List<Ally>();
+        if (allies.Contains(ally)) return;
         allies.Add(ally);
     }
     public void RemoveAlly(Ally ally)
     {
         allies.Remove(ally);
+        combatParty?.Remove(ally);
         if (currentAlly == ally)
         {
             currentAlly = null;
