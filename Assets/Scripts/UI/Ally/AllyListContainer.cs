@@ -10,11 +10,13 @@ public class AllyListContainer : MonoBehaviour
 
     private void OnEnable()
     {
+        Debug.Log("AllyListContainer enabled, populating ally list.");
         PopulateAllyList();
     }
 
     public void PopulateAllyList()
     {
+        Debug.Log("Populating ally list. Combat reference: " + (combat != null ? combat.name : "None") + ", Max Combat Party Size Override: " + maxCombatPartySizeOverride);
         if (content == null || allySelectButtonPrefab == null || AllyManager.Instance == null)
         {
             return;
@@ -36,6 +38,7 @@ public class AllyListContainer : MonoBehaviour
             }
         }
     }
+
 
     private int GetMaxCombatPartySize()
     {

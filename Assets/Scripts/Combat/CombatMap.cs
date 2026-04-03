@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CombatMap", menuName = "Scriptable Objects/Combat/Map")]
+[CreateAssetMenu(fileName = "CombatMap", menuName = "Combat/Map")]
 public class CombatMap : ScriptableObject
 {
     [SerializeField] private string mapName;

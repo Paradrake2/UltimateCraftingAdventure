@@ -5,6 +5,8 @@ public class Combat : MonoBehaviour
 {
     [Header("Encounter")]
     [SerializeField] private CombatMap map;
+    [SerializeField] private AllyCombatWindowUI allyCombatWindowUI;
+    [SerializeField] private GameObject combatInitializerPrefab;
     [SerializeField] private Ally[] allies;
     [SerializeField] private bool useAlliesFromManager = true;
     [SerializeField] private bool startCombatOnEnable;
@@ -43,12 +45,27 @@ public class Combat : MonoBehaviour
             StartCombat();
         }
     }
-
+    public void SceneLoaded()
+    {
+        RefreshAlliesFromManager();
+        if (!isCombatActive)
+        {
+            combatInitializerPrefab?.SetActive(true);
+        }
+        if (startCombatOnEnable && !isCombatActive)
+        {
+            StartCombat();
+        }
+    }
     public void StartCombat()
     {
         EndCombat();
         RefreshAlliesFromManager();
-
+        if (combatInitializerPrefab != null)
+        {
+            combatInitializerPrefab.SetActive(false);
+        }
+        Debug.Log("Attempting to start combat. Map: " + (map != null ? map.name : "None") + ", Allies: " + (allies != null ? allies.Length.ToString() : "None"));
         if (!CanStartCombat())
         {
             isCombatActive = false;
@@ -125,6 +142,7 @@ public class Combat : MonoBehaviour
             ally.CombatStats.Initialize(ally.Stats);
             ally.CombatStats.ResetForCombat();
         }
+        allyCombatWindowUI.PopulateAllyCombatInfo(allies);
     }
 
     private void SpawnNextWave()

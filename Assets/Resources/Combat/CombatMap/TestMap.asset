@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb1c984d813725489625a6de5810d72, type: 3}
+  m_Name: TestMap
+  m_EditorClassIdentifier: 
+  mapName: Test
+  possibleEnemies:
+  - {fileID: 11400000, guid: d65c9b5e92bb7224fbe2e3fa6c2c9efe, type: 2}
+  bossEnemy: {fileID: 11400000, guid: d65c9b5e92bb7224fbe2e3fa6c2c9efe, type: 2}
+  maxAlliesInBattle: 3
+  maxActiveEnemies: 4
+  wavesBeforeBoss: 5

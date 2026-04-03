@@ -9,12 +9,20 @@ public class Ally : ScriptableObject
     [SerializeField] private AllyArchetype archetype;
     [SerializeField] private AllyEquipmentInventory equipmentInventory = new AllyEquipmentInventory();
     [SerializeField] private AllyCombat combatStats = new AllyCombat();
+    [SerializeField] private float xp = 0f;
+    [SerializeField] private int level = 1;
+    [SerializeField] private float xpToNextLevel = 100f;
+    [SerializeField] private float xpGrowthRate = 1.1f;
     public string AllyName => allyName;
     public Sprite Icon => icon;
     public StatCollection Stats => stats;
     public AllyArchetype Archetype => archetype;
     public AllyEquipmentInventory EquipmentInventory => equipmentInventory;
     public AllyCombat CombatStats => combatStats;
+    public float XP => xp;
+    public int Level => level;
+    public float XPToNextLevel => xpToNextLevel;
+    public float XPGrowthRate => xpGrowthRate;
 
     public void Initialize(string name, Sprite newIcon, StatCollection newStats, AllyArchetype newArchetype)
     {
@@ -98,5 +106,22 @@ public class Ally : ScriptableObject
     public void RecalculateStats()
     {
         combatStats?.Initialize(stats);
+    }
+    public void AddXP(float amount)
+    {
+        if (amount <= 0f)
+        {
+            return;
+        }
+
+        xp += amount;
+
+        while (xp >= xpToNextLevel)
+        {
+            xp -= xpToNextLevel;
+            level++;
+            xpToNextLevel *= xpGrowthRate;
+            RecalculateStats();
+        }
     }
 }

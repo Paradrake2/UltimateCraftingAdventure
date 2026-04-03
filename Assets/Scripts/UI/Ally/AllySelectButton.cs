@@ -1,12 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+using TMPro;
 public class AllySelectButton : MonoBehaviour
 {
     [SerializeField] private Ally ally;
     [SerializeField] private Image icon;
     [SerializeField] private Color selectedColor = Color.green;
     [SerializeField] private Color unselectedColor = Color.white;
+    [SerializeField] private TextMeshProUGUI nameLabel;
 
     private bool useForCombatSelection;
     private int maxCombatPartySize = 1;
@@ -46,7 +47,10 @@ public class AllySelectButton : MonoBehaviour
             icon.sprite = ally != null ? ally.Icon : null;
             icon.enabled = ally != null && ally.Icon != null;
         }
-
+        if (nameLabel != null)
+        {
+            nameLabel.text = ally != null ? ally.name : "Empty Slot";
+        }
         RefreshVisualState();
     }
 
