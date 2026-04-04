@@ -12,6 +12,7 @@ public class EnemyCombat
 
     [SerializeField] private StatCollection statCollection = new StatCollection();
     [SerializeField] private double currentHealth;
+    [SerializeField] private double currentBarrier = 0d;
     [SerializeField] private float baseAttackSpeed = 1f;
 
     public StatCollection StatCollection => statCollection;
@@ -20,6 +21,11 @@ public class EnemyCombat
     {
         get => currentHealth;
         set => currentHealth = value;
+    }
+    public double CurrentBarrier
+    {
+        get => currentBarrier;
+        set => currentBarrier = value;
     }
     public bool IsAlive => CurrentHealth > 0d;
 
@@ -31,6 +37,7 @@ public class EnemyCombat
     public void ResetForCombat()
     {
         CurrentHealth = GetMaxHealth();
+        CurrentBarrier = GetMaxBarrier();
     }
 
     public float GetAttackInterval()
@@ -66,6 +73,11 @@ public class EnemyCombat
         return Mathf.Max(statCollection.GetStatValue(HealthStatName), MinimumHealth);
     }
 
+    public double GetMaxBarrier()
+    {
+        return statCollection != null ? Mathf.Max(statCollection.GetStatValue("Barrier"), 0f) : 0d;
+    }
+
     public Ally GetAttackTarget(IReadOnlyList<Ally> allies)
     {
         if (!IsAlive || allies == null || allies.Count == 0)
@@ -78,6 +90,15 @@ public class EnemyCombat
 
     public void TakeDamage(double damage)
     {
+        if (CurrentBarrier > 0)
+        {
+            double remainingDamage = damage - CurrentBarrier;
+            CurrentBarrier = Mathf.Max((float)(CurrentBarrier - damage), 0);
+            damage = remainingDamage;
+        }
+
+        if (damage <= 0) return;
+
         CurrentHealth -= damage;
         if (CurrentHealth < 0d)
         {

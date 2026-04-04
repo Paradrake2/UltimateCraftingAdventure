@@ -128,6 +128,7 @@ public class AllyFactoryUI : MonoBehaviour
         allyManager.AddAlly(ally);
         allyManager.SwitchAlly(ally);
         CloseMenu();
-        FindAnyObjectByType<AllyListContainer>().PopulateAllyList();
+        foreach (AllyListContainer container in FindObjectsByType<AllyListContainer>(FindObjectsSortMode.None))
+            container.PopulateAllyList();
     }
 }

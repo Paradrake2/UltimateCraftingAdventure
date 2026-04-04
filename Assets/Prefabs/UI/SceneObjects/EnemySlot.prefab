@@ -245,8 +245,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemy: {fileID: 0}
   icon: {fileID: 1871614469673323863}
-  healthBar: {fileID: 8827576315663557294}
-  attackBar: {fileID: 1754874319768258362}
+  healthBar: {fileID: 6352036152129495522}
+  attackBar: {fileID: 6993823238850844401}
+  barrierBar: {fileID: 4860732171122525988}
 --- !u!1 &6352036152129495522
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,6 +6,7 @@ public class Combat : MonoBehaviour
     [Header("Encounter")]
     [SerializeField] private CombatMap map;
     [SerializeField] private AllyCombatWindowUI allyCombatWindowUI;
+    [SerializeField] private EnemyCombatWindowUI enemyCombatWindowUI;
     [SerializeField] private GameObject combatInitializerPrefab;
     [SerializeField] private Ally[] allies;
     [SerializeField] private bool useAlliesFromManager = true;
@@ -36,21 +37,39 @@ public class Combat : MonoBehaviour
     private void Awake()
     {
         RefreshAlliesFromManager();
+        if (combatInitializerPrefab != null)
+            combatInitializerPrefab.SetActive(false);
     }
 
     private void OnEnable()
     {
+        MissionManager.OnMapSelected += OnMapSelected;
         if (startCombatOnEnable)
         {
             StartCombat();
         }
+    }
+
+    private void OnDisable()
+    {
+        MissionManager.OnMapSelected -= OnMapSelected;
+    }
+
+    private void OnMapSelected(CombatMap selectedMap)
+    {
+        if (isCombatActive) return;
+        SetMap(selectedMap);
+        combatInitializerPrefab?.SetActive(true);
     }
     public void SceneLoaded()
     {
         RefreshAlliesFromManager();
         if (!isCombatActive)
         {
-            combatInitializerPrefab?.SetActive(true);
+            bool mapSelected = MissionManager.SelectedMap != null;
+            if (mapSelected)
+                SetMap(MissionManager.SelectedMap);
+            combatInitializerPrefab?.SetActive(mapSelected);
         }
         if (startCombatOnEnable && !isCombatActive)
         {
@@ -61,6 +80,8 @@ public class Combat : MonoBehaviour
     {
         EndCombat();
         RefreshAlliesFromManager();
+        allyCombatWindowUI.ClearAllyCombatInfo();
+        enemyCombatWindowUI.ClearEnemyCombatInfo();
         if (combatInitializerPrefab != null)
         {
             combatInitializerPrefab.SetActive(false);
@@ -89,8 +110,22 @@ public class Combat : MonoBehaviour
         isCombatActive = false;
         StopAttackLoops(allyAttackRoutines);
         StopAttackLoops(enemyAttackRoutines);
+        
     }
-
+    public void ForceEndCombat()
+    {
+        isCombatActive = false;
+        StopAttackLoops(allyAttackRoutines);
+        StopAttackLoops(enemyAttackRoutines);
+        activeEnemies.Clear();
+        currentWaveNumber = 0;
+        defeatedRegularWaves = 0;
+        bossWaveActive = false;
+        encounterCompleted = false;
+        enemyCombatWindowUI.ClearEnemyCombatInfo();
+        allyCombatWindowUI.ClearAllyCombatInfo();
+        map = null;
+    }
     public void SetMap(CombatMap newMap)
     {
         map = newMap;
@@ -192,7 +227,7 @@ public class Combat : MonoBehaviour
             EndCombat();
             return;
         }
-
+        enemyCombatWindowUI.PopulateEnemyCombatInfo(activeEnemies);
         currentWaveNumber++;
         bossWaveActive = false;
         StartEnemyAttackLoops();
@@ -215,6 +250,8 @@ public class Combat : MonoBehaviour
         activeEnemies.Add(runtimeBoss);
         currentWaveNumber++;
         bossWaveActive = true;
+        enemyCombatWindowUI.PopulateEnemyCombatInfo(activeEnemies);
+
         StartEnemyAttackLoops();
     }
 
@@ -223,14 +260,29 @@ public class Combat : MonoBehaviour
         if (bossWaveActive)
         {
             encounterCompleted = true;
-            EndCombat();
+            HandleEncounterCompleted();
             return;
         }
 
         defeatedRegularWaves++;
         SpawnNextWave();
     }
+    private void HandleEncounterCompleted()
+    {
+        if (map == null)
+        {
+            return;
+        }
 
+        foreach (var unlockedMap in map.MapsUnlockedOnCompletion)
+        {
+            if (unlockedMap != null)
+            {
+                unlockedMap.Unlock();
+            }
+        }
+        StartCombat();
+    }
     private void StartAllyAttackLoops()
     {
         StopAttackLoops(allyAttackRoutines);
@@ -338,7 +390,7 @@ public class Combat : MonoBehaviour
         RemoveDefeatedEnemies();
         if (AllAlliesDefeated())
         {
-            EndCombat();
+            ForceEndCombat();
             return;
         }
 

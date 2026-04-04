@@ -32,6 +32,18 @@ public class AllyCombatWindowUI : MonoBehaviour
             }
         }
     }
+    public void ClearAllyCombatInfo()
+    {
+        if (allyWindowContent == null)
+        {
+            return;
+        }
+
+        foreach (Transform child in allyWindowContent)
+        {
+            Destroy(child.gameObject);
+        }
+    }
     void Start()
     {
         

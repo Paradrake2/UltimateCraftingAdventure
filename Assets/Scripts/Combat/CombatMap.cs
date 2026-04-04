@@ -12,6 +12,9 @@ public class CombatMap : ScriptableObject
     [SerializeField] private int wavesBeforeBoss = 5;
     [SerializeField] private Sprite mapBackground;
     [SerializeField] private List<EquipmentLootTableEntry> lootTableEntries = new List<EquipmentLootTableEntry>();
+    [SerializeField] private bool isLocked = true;
+    [SerializeField] private List<CombatMap> prerequisiteMaps = new List<CombatMap>();
+    [SerializeField] private List<CombatMap> mapsUnlockedOnCompletion = new List<CombatMap>();
     public string MapName => string.IsNullOrWhiteSpace(mapName) ? name : mapName;
     public IReadOnlyList<Enemy> PossibleEnemies => possibleEnemies;
     public Enemy BossEnemy => bossEnemy;
@@ -20,6 +23,9 @@ public class CombatMap : ScriptableObject
     public int WavesBeforeBoss => Mathf.Max(1, wavesBeforeBoss);
     public Sprite MapBackground => mapBackground;
     public IReadOnlyList<EquipmentLootTableEntry> LootTableEntries => lootTableEntries;
+    public bool IsLocked => isLocked;
+    public IReadOnlyList<CombatMap> PrerequisiteMaps => prerequisiteMaps;
+    public IReadOnlyList<CombatMap> MapsUnlockedOnCompletion => mapsUnlockedOnCompletion;
     public Enemy GetRandomEnemyTemplate()
     {
         if (possibleEnemies == null || possibleEnemies.Count == 0)
@@ -69,5 +75,23 @@ public class CombatMap : ScriptableObject
         }
 
         return null; // Fallback, should not reach here if weights are set correctly
+    }
+    public void Unlock()
+    {
+        isLocked = false;
+    }
+    public bool CanUnlock()
+    {
+        if (!isLocked) return false; // Already unlocked
+
+        foreach (var prerequisite in prerequisiteMaps)
+        {
+            if (prerequisite != null && prerequisite.IsLocked)
+            {
+                return false; // At least one prerequisite is still locked
+            }
+        }
+
+        return true; // All prerequisites are unlocked
     }
 }

@@ -63,6 +63,8 @@ public class Equipment : ScriptableObject
     [SerializeField] private string id;
     [SerializeField] private List<EquipmentEnchantmentHolder> enchantments = new List<EquipmentEnchantmentHolder>();
     [SerializeField] private List<EquipmentAugmentHolder> augments = new List<EquipmentAugmentHolder>();
+    [SerializeField] private int reinforcementLevel = 0;
+    [SerializeField] private List<Item> refundItems = new List<Item>();
     public string EquipmentName => equipmentName;
     public Sprite Icon => icon;
     public StatCollection Stats => stats;
@@ -74,6 +76,9 @@ public class Equipment : ScriptableObject
     public string ID => id;
     public IReadOnlyList<EquipmentEnchantmentHolder> Enchantments => enchantments;
     public IReadOnlyList<EquipmentAugmentHolder> Augments => augments;
+    public int ReinforcementLevel => reinforcementLevel;
+    public IReadOnlyList<Item> RefundItems => refundItems;
+
     public Equipment(string name, Sprite icon, StatCollection stats, EquipmentType equipmentType, EquipmentRarity rarity)
     {
         equipmentName = name;
@@ -188,5 +193,20 @@ public class Equipment : ScriptableObject
             augments.Add(new EquipmentAugmentHolder(augment));
         }
     }
-
+    public void Reinforce()
+    {
+        reinforcementLevel++;
+        float reinforcementModifier = 1 + (reinforcementLevel * 0.1f);
+        foreach (var statValue in stats.Stats)
+        {
+            statValue.SetValue(statValue.Value * reinforcementModifier);
+        }
+    }
+    public void AddRefundItem(Item item)
+    {
+        if (item != null)
+        {
+            refundItems.Add(item);
+        }
+    }
 }

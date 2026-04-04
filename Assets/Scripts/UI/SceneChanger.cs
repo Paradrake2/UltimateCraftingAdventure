@@ -5,6 +5,8 @@ public class SceneChanger : MonoBehaviour
 {
     [SerializeField] private string baseScene = "Combat";
 
+    private string _pendingOverlay;
+
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -17,6 +19,8 @@ public class SceneChanger : MonoBehaviour
 
     // After any additive scene loads, destroy its EventSystem and disable its
     // AudioListener so only the base scene's copies remain active.
+    // If this was triggered by OpenOverlay, also unload any other overlays now
+    // that the new scene is confirmed live.
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (mode != LoadSceneMode.Additive) return;
@@ -24,17 +28,34 @@ public class SceneChanger : MonoBehaviour
         foreach (var root in scene.GetRootGameObjects())
         {
             var es = root.GetComponentInChildren<UnityEngine.EventSystems.EventSystem>();
-            if (es != null) Destroy(es.gameObject);
+            if (es != null
+                && UnityEngine.EventSystems.EventSystem.current != null
+                && UnityEngine.EventSystems.EventSystem.current != es
+                && UnityEngine.EventSystems.EventSystem.current.gameObject.scene.name == baseScene)
+                Destroy(es.gameObject);
 
             var al = root.GetComponentInChildren<AudioListener>();
             if (al != null) al.enabled = false;
         }
+
+        if (_pendingOverlay == scene.name)
+        {
+            _pendingOverlay = null;
+            for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
+            {
+                Scene s = SceneManager.GetSceneAt(i);
+                if (s.name != baseScene && s.name != scene.name && s.isLoaded)
+                    SceneManager.UnloadSceneAsync(s);
+            }
+        }
     }
 
-    // Closes all open overlays, then opens the named scene additively.
+    // Opens the named scene additively, then unloads all other overlays once it is loaded.
     public void OpenOverlay(string sceneName)
     {
-        CloseAllOverlays();
+        if (SceneManager.GetSceneByName(sceneName).isLoaded) return;
+
+        _pendingOverlay = sceneName;
         SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
     }
 
@@ -55,10 +76,19 @@ public class SceneChanger : MonoBehaviour
         }
     }
 
-    // Full replace — only used for the initial transition into the Combat scene.
+    // Returns to the combat base scene. Loads it the first time; after that just closes overlays.
     public void LoadCombatScene()
     {
-        SceneManager.LoadScene(baseScene);
-        FindAnyObjectByType<Combat>()?.SceneLoaded();
+        if (!SceneManager.GetSceneByName(baseScene).isLoaded)
+        {
+            SceneManager.LoadScene(baseScene);
+            Debug.Log("Loading base scene additively");
+            CloseAllOverlays();
+        }
+        else
+        {
+            Debug.Log("Base scene already loaded, just closing overlays");
+            CloseAllOverlays();
+        }
     }
 }

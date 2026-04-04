@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6bb1c984d813725489625a6de5810d72, type: 3}
-  m_Name: TestMap
+  m_Name: TestMap2
   m_EditorClassIdentifier: 
-  mapName: Test
+  mapName: TestMap2
   possibleEnemies:
-  - {fileID: 11400000, guid: d65c9b5e92bb7224fbe2e3fa6c2c9efe, type: 2}
+  - {fileID: 11400000, guid: 5447994719b5fcc4496ff8b50578ee87, type: 2}
   bossEnemy: {fileID: 11400000, guid: 5447994719b5fcc4496ff8b50578ee87, type: 2}
   maxAlliesInBattle: 3
   maxActiveEnemies: 4
   wavesBeforeBoss: 1
   mapBackground: {fileID: 0}
   lootTableEntries: []
-  isLocked: 0
-  prerequisiteMaps: []
-  mapsUnlockedOnCompletion:
-  - {fileID: 11400000, guid: 6e07732c9130c844a98a9f09dad6fdc4, type: 2}
+  isLocked: 1
+  prerequisiteMaps:
+  - {fileID: 11400000, guid: ee16f173fc6f62842b078b266225fbbd, type: 2}
+  mapsUnlockedOnCompletion: []

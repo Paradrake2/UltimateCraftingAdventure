@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b2d13cdd3a354f47aecf84336e0f12c, type: 3}
-  m_Name: TestEnemy
+  m_Name: TestBoss
   m_EditorClassIdentifier: 
-  enemyName: Test
-  icon: {fileID: 3990020979054268718, guid: 5d0e792399b4b364399e458bc02accf7, type: 3}
+  enemyName: TestBoss
+  icon: {fileID: -6111495434055476616, guid: 5d0e792399b4b364399e458bc02accf7, type: 3}
   stats:
     stats:
     - stat: {fileID: 11400000, guid: 72d4fcf6b9234a34c80fafaa5a19026c, type: 2}
-      value: 50
-    - stat: {fileID: 11400000, guid: 044072aab872c4a4481055ac7d4263c9, type: 2}
-      value: 1
+      value: 100
     - stat: {fileID: 11400000, guid: 30d55cc49b243fc4ebb358d952dca8cb, type: 2}
+      value: 5
+    - stat: {fileID: 11400000, guid: 044072aab872c4a4481055ac7d4263c9, type: 2}
       value: 1
     - stat: {fileID: 11400000, guid: b59dbb9fbc6cdd0479478d7f5cf4254b, type: 2}
       value: 1
