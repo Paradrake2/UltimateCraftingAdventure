@@ -10,14 +10,16 @@ public class CombatMap : ScriptableObject
     [SerializeField] private int maxAlliesInBattle = 3;
     [SerializeField] private int maxActiveEnemies = 4;
     [SerializeField] private int wavesBeforeBoss = 5;
-
+    [SerializeField] private Sprite mapBackground;
+    [SerializeField] private List<EquipmentLootTableEntry> lootTableEntries = new List<EquipmentLootTableEntry>();
     public string MapName => string.IsNullOrWhiteSpace(mapName) ? name : mapName;
     public IReadOnlyList<Enemy> PossibleEnemies => possibleEnemies;
     public Enemy BossEnemy => bossEnemy;
     public int MaxAlliesInBattle => Mathf.Max(1, maxAlliesInBattle);
     public int MaxActiveEnemies => Mathf.Max(1, maxActiveEnemies);
     public int WavesBeforeBoss => Mathf.Max(1, wavesBeforeBoss);
-
+    public Sprite MapBackground => mapBackground;
+    public IReadOnlyList<EquipmentLootTableEntry> LootTableEntries => lootTableEntries;
     public Enemy GetRandomEnemyTemplate()
     {
         if (possibleEnemies == null || possibleEnemies.Count == 0)
@@ -40,5 +42,32 @@ public class CombatMap : ScriptableObject
         }
 
         return validEnemies[Random.Range(0, validEnemies.Count)];
+    }
+    public Equipment GetEquipmentDrop()
+    {
+        if (lootTableEntries == null || lootTableEntries.Count == 0)
+        {
+            return null;
+        }
+
+        float totalWeight = 0f;
+        foreach (var entry in lootTableEntries)
+        {
+            totalWeight += entry.dropChance;
+        }
+
+        float randomValue = Random.Range(0, totalWeight);
+        float cumulativeWeight = 0f;
+
+        foreach (var entry in lootTableEntries)
+        {
+            cumulativeWeight += entry.dropChance;
+            if (randomValue <= cumulativeWeight)
+            {
+                return entry.equipment;
+            }
+        }
+
+        return null; // Fallback, should not reach here if weights are set correctly
     }
 }
