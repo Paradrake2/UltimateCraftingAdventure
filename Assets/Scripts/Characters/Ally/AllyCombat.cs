@@ -13,6 +13,7 @@ public class AllyCombat
     [SerializeField] private StatCollection statCollection = new StatCollection();
     [SerializeField] private double currentHealth;
     [SerializeField] private float baseAttackSpeed = 1f;
+    [SerializeField] private double currentBarrier = 0d;
 
     public StatCollection StatCollection => statCollection;
     public float BaseAttackSpeed => baseAttackSpeed;
@@ -20,6 +21,11 @@ public class AllyCombat
     {
         get => currentHealth;
         set => currentHealth = value;
+    }
+    public double CurrentBarrier
+    {
+        get => currentBarrier;
+        set => currentBarrier = value;
     }
     public bool IsAlive => CurrentHealth > 0d;
 
@@ -31,6 +37,7 @@ public class AllyCombat
     public void ResetForCombat()
     {
         CurrentHealth = GetMaxHealth();
+        CurrentBarrier = GetMaxBarrier();
     }
 
     public float GetAttackInterval()
@@ -65,7 +72,33 @@ public class AllyCombat
 
         return Mathf.Max(statCollection.GetStatValue(HealthStatName), MinimumHealth);
     }
-
+    public double GetEffectiveHealth()
+    {
+        return GetMaxHealth() + CurrentBarrier;
+    }
+    public double GetMaxBarrier()
+    {
+        return Mathf.Max(statCollection.GetStatValue("Barrier"), 0f);
+    }
+    public double GetEffectiveHealthWithMaxBarrier()
+    {
+        return GetMaxHealth() + GetMaxBarrier();
+    }
+    public double GetHealthPercent()
+    {
+        double effectiveHealth = GetEffectiveHealth();
+        return effectiveHealth > 0 ? CurrentHealth / effectiveHealth : 0d;
+    }
+    public double GetHealthPercentWithMaxBarrier()
+    {
+        double effectiveHealth = GetEffectiveHealthWithMaxBarrier();
+        return effectiveHealth > 0 ? CurrentHealth / effectiveHealth : 0d;
+    }
+    public double GetBarrierPercent()
+    {
+        double maxBarrier = GetMaxBarrier();
+        return maxBarrier > 0 ? CurrentBarrier / maxBarrier : 0d;
+    }
     public Enemy GetAttackTarget(IReadOnlyList<Enemy> enemies)
     {
         if (!IsAlive || enemies == null || enemies.Count == 0)
@@ -78,6 +111,13 @@ public class AllyCombat
 
     public void TakeDamage(double damage)
     {
+        if (CurrentBarrier > 0)
+        {
+            double remainingDamage = damage - CurrentBarrier;
+            CurrentBarrier = Mathf.Max((float)(CurrentBarrier - damage), 0);
+            damage = remainingDamage;
+        }
+
         CurrentHealth -= damage;
         if (CurrentHealth < 0)
         {
