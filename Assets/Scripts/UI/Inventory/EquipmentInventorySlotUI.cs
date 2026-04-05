@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EquipmentInventorySlotUI : MonoBehaviour
 {
     [SerializeField] private Equipment equipment;
-    [SerializeField] private Sprite sprite;
+    [SerializeField] private Image icon;
     [SerializeField] private Sprite baseSprite;
     
     public void Initialize(Equipment equipment)
@@ -13,7 +14,7 @@ public class EquipmentInventorySlotUI : MonoBehaviour
     public void SetEquipment(Equipment equipment)
     {
         this.equipment = equipment;
-        sprite = equipment != null ? equipment.Icon : baseSprite;
+        icon.sprite = equipment != null ? equipment.Icon : baseSprite;
     }
     public Equipment GetEquipment()
     {
@@ -22,7 +23,7 @@ public class EquipmentInventorySlotUI : MonoBehaviour
     public void ClearEquipment()
     {
         equipment = null;
-        sprite = baseSprite;
+        icon.sprite = baseSprite;
     }
     public void OnClick()
     {

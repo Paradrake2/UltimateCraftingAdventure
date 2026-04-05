@@ -9,14 +9,28 @@ public class EquipmentInventoryUI : MonoBehaviour
     
     public void PopulateInventory()
     {
-        IReadOnlyList<Equipment> ownedEquipment = inventory.OwnedEquipment;
+        foreach (Transform child in inventoryPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        foreach (var equipment in inventory.OwnedEquipment)
+        {
+            GameObject slot = Instantiate(equipmentSlotPrefab, inventoryPanel.transform);
+            EquipmentInventorySlotUI slotUI = slot.GetComponent<EquipmentInventorySlotUI>();
+            if (slotUI != null)
+            {
+                slotUI.Initialize(equipment);
+            }
+        }
+
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (inventory == null)
         {
-            inventory = EquipmentInventory.Instance;
+            Debug.LogError("EquipmentInventory not assigned. Please assign the EquipmentInventory asset in the Inspector.");
+            return;
         }
         PopulateInventory();
     }

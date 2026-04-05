@@ -4,11 +4,11 @@ using System.Collections.Generic;
 [CreateAssetMenu(fileName = "EnemyLootTable", menuName = "Loot/EnemyLootTable")]
 public class EnemyLootTable : ScriptableObject
 {
-    [SerializeField] private List<Item> lootItems = new List<Item>();
-    public IReadOnlyList<Item> LootItems => lootItems;
+    [SerializeField] private List<ItemQuantity> lootItems = new List<ItemQuantity>();
+    public IReadOnlyList<ItemQuantity> LootItems => lootItems;
     [SerializeField] private List<EquipmentLootTableEntry> lootEquipment = new List<EquipmentLootTableEntry>();
     public IReadOnlyList<EquipmentLootTableEntry> LootEquipment => lootEquipment;
-    public Item GetItemDrop()
+    public ItemQuantity GetItemDrop()
     {
         if (lootItems == null || lootItems.Count == 0)
         {
@@ -29,5 +29,21 @@ public class EnemyLootTable : ScriptableObject
         int randomIndex = Random.Range(0, lootEquipment.Count);
         return lootEquipment[randomIndex].equipment;
     }
-
+    public object GetLootDrop()
+    {
+        bool dropItem = Random.value < 0.33f; // 33% chance to drop an item
+        bool dropEquipment = Random.value >= 0.33f && Random.value < 0.66f; // 33% chance to drop equipment
+        if (dropItem)
+        {
+            return GetItemDrop();
+        }
+        else if (dropEquipment)
+        {
+            return GetEquipmentDrop();
+        }
+        else
+        {
+            return null;
+        }
+    }
 }

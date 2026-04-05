@@ -1,5 +1,16 @@
 using UnityEngine;
 
+[System.Serializable]
+public class CurrencyCost
+{
+    [SerializeField] private Currency currency;
+    [SerializeField] private float amount;
+
+    public Currency Currency => currency;
+    public float Amount => amount;
+}
+
+
 [CreateAssetMenu(fileName = "Currency", menuName = "Scriptable Objects/Economy/Currency")]
 public class Currency : ScriptableObject
 {

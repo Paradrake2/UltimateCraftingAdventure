@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// this exists, but is not used yet. I'm not sure if it will ever be used, but it's here just in case.
 [CreateAssetMenu(fileName = "ItemRecipe", menuName = "Recipes/ItemRecipe")]
 public class ItemRecipe : ScriptableObject
 {

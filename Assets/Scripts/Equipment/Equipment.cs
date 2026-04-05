@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+
 public enum EquipmentType
 {
     Weapon,
@@ -24,22 +25,24 @@ public enum EquipmentRarity
     Ultimate,
     Godly
 }
+
+// used for equipment generation
 [System.Serializable]
 public class EquipmentStatModifier
 {
-    public EquipmentRarity rarity;
+    public EquipmentRarity rarity; // added for reference I think, don't really remember but it might be useful for something
     public float GetModifier(EquipmentRarity rarity)
     {
         switch (rarity)
         {
             case EquipmentRarity.Common: return 1f;
-            case EquipmentRarity.Uncommon: return 1.5f;
-            case EquipmentRarity.Rare: return 2f;
-            case EquipmentRarity.Epic: return 3;
-            case EquipmentRarity.Legendary: return 5f;
-            case EquipmentRarity.Mythical: return 6f;
-            case EquipmentRarity.Ultimate: return 7.5f;
-            case EquipmentRarity.Godly: return 10f;
+            case EquipmentRarity.Uncommon: return 1.25f;
+            case EquipmentRarity.Rare: return 1.5f;
+            case EquipmentRarity.Epic: return 2f;
+            case EquipmentRarity.Legendary: return 2.5f;
+            case EquipmentRarity.Mythical: return 3f;
+            case EquipmentRarity.Ultimate: return 4f;
+            case EquipmentRarity.Godly: return 5f;
             default: return 1f;
         }
     }
@@ -54,7 +57,8 @@ public class Equipment : ScriptableObject
 {
     [SerializeField] private string equipmentName;
     [SerializeField] private Sprite icon;
-    [SerializeField] private StatCollection stats = new StatCollection();
+    [SerializeField] private StatCollection baseStats = new StatCollection(); // stats that this equipment will always have
+    [SerializeField] private StatCollection stats = new StatCollection(); // random stats
     [SerializeField] private EquipmentType equipmentType;
     [SerializeField] private List<EquipmentTag> tags = new List<EquipmentTag>();
     [SerializeField] private EquipmentStatModifier statModifier = new EquipmentStatModifier();
@@ -63,10 +67,15 @@ public class Equipment : ScriptableObject
     [SerializeField] private string id;
     [SerializeField] private List<EquipmentEnchantmentHolder> enchantments = new List<EquipmentEnchantmentHolder>();
     [SerializeField] private List<EquipmentAugmentHolder> augments = new List<EquipmentAugmentHolder>();
-    [SerializeField] private int reinforcementLevel = 0;
+    [SerializeField] private int reinforcementLevel = 0; // increases baseStats by 10% per level
+    [SerializeField] private int maxReinforcementLevel = 5;
     [SerializeField] private List<Item> refundItems = new List<Item>();
+    [SerializeField] private int maxRefundItems = 5;
+    [SerializeField] private int level = 1;
+    [SerializeField] private EquipmentGenerationModifier generationModifier = EquipmentGenerationModifier.None;
     public string EquipmentName => equipmentName;
     public Sprite Icon => icon;
+    public StatCollection BaseStats => baseStats;
     public StatCollection Stats => stats;
     public EquipmentType EquipmentType => equipmentType;
     public IReadOnlyList<EquipmentTag> Tags => tags;
@@ -77,18 +86,22 @@ public class Equipment : ScriptableObject
     public IReadOnlyList<EquipmentEnchantmentHolder> Enchantments => enchantments;
     public IReadOnlyList<EquipmentAugmentHolder> Augments => augments;
     public int ReinforcementLevel => reinforcementLevel;
+    public int MaxReinforcementLevel => maxReinforcementLevel;
     public IReadOnlyList<Item> RefundItems => refundItems;
-
-    public Equipment(string name, Sprite icon, StatCollection stats, EquipmentType equipmentType, EquipmentRarity rarity)
+    public int MaxRefundItems => maxRefundItems;
+    public int Level => level; // set on generation, used for scaling stats, cannot be changed after generation
+    public EquipmentGenerationModifier GenerationModifier => generationModifier;
+    /**
+    public Equipment(string name, Sprite icon, StatCollection stats, EquipmentType equipmentType, EquipmentRarity rarity, int level = 1)
     {
         equipmentName = name;
         this.icon = icon;
         this.stats = stats;
         this.equipmentType = equipmentType;
         this.rarity = rarity;
-        ApplyModifier(rarity);
-        GenerateID();
+        this.level = level;
     }
+    **/
     private void OnEnable()
     {
         stats ??= new StatCollection();
@@ -142,14 +155,6 @@ public class Equipment : ScriptableObject
         }
         return false;
     }
-    private void ApplyModifier(EquipmentRarity rarity)
-    {
-        float modifier = statModifier.GetModifier(rarity);
-        foreach (var statValue in stats.Stats)
-        {
-            statValue.SetValue(statValue.Value * modifier);
-        }
-    }
     public void GenerateID()
     {
         id = System.Guid.NewGuid().ToString();
@@ -195,12 +200,17 @@ public class Equipment : ScriptableObject
     }
     public void Reinforce()
     {
+        if (reinforcementLevel >= maxReinforcementLevel) return;
         reinforcementLevel++;
         float reinforcementModifier = 1 + (reinforcementLevel * 0.1f);
-        foreach (var statValue in stats.Stats)
+        foreach (var statValue in baseStats.Stats)
         {
             statValue.SetValue(statValue.Value * reinforcementModifier);
         }
+    }
+    public void SetReinforcementLevel(int newLevel)
+    {
+        reinforcementLevel = Mathf.Clamp(newLevel, 0, maxReinforcementLevel);
     }
     public void AddRefundItem(Item item)
     {
@@ -208,5 +218,18 @@ public class Equipment : ScriptableObject
         {
             refundItems.Add(item);
         }
+    }
+    // applied on generation
+    public void SetLevel(int newLevel)
+    {
+        level = Mathf.Max(1, newLevel);
+    }
+    public void SetGenerationModifier(EquipmentGenerationModifier newModifier)
+    {
+        generationModifier = newModifier;
+    }
+    public void SetRarity(EquipmentRarity newRarity)
+    {
+        rarity = newRarity;
     }
 }

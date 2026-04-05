@@ -9,6 +9,9 @@ public class AllyCombat
     private const string HealthStatName = "Health";
     private const float MinimumAttackInterval = 0.01f;
     private const float MinimumHealth = 1f;
+    private const string DamageSuffix = "Damage";
+    private const string ResistanceSuffix = "Resistance";
+    private const string DamageMultiplierSuffix = "DamageMultiplier";
 
     [SerializeField] private StatCollection statCollection = new StatCollection();
     [SerializeField] private double currentHealth;
@@ -109,7 +112,25 @@ public class AllyCombat
         return GetRandomEnemy(enemies);
     }
 
-    public void TakeDamage(double damage)
+    public void TakeDamage(System.Collections.Generic.IReadOnlyList<DamageInstance> instances)
+    {
+        if (instances == null || instances.Count == 0) return;
+
+        double totalDamage = 0d;
+        for (int i = 0; i < instances.Count; i++)
+        {
+            DamageInstance hit = instances[i];
+            string resistStat = hit.Type.ToString() + ResistanceSuffix;
+            float resistance = statCollection != null
+                ? Mathf.Clamp(statCollection.GetStatValue(resistStat), 0f, 100f)
+                : 0f;
+            totalDamage += hit.Amount * (1f - resistance / 100f);
+        }
+
+        ApplyDamageToHealthPool(totalDamage);
+    }
+
+    private void ApplyDamageToHealthPool(double damage)
     {
         if (CurrentBarrier > 0)
         {
@@ -117,6 +138,8 @@ public class AllyCombat
             CurrentBarrier = Mathf.Max((float)(CurrentBarrier - damage), 0);
             damage = remainingDamage;
         }
+
+        if (damage <= 0) return;
 
         CurrentHealth -= damage;
         if (CurrentHealth < 0)
@@ -130,6 +153,32 @@ public class AllyCombat
         // placeholder
     }
 
+    public System.Collections.Generic.List<DamageInstance> BuildAttackInstances()
+    {
+        var instances = new System.Collections.Generic.List<DamageInstance>();
+        if (statCollection == null) return instances;
+
+        foreach (DamageType type in System.Enum.GetValues(typeof(DamageType)))
+        {
+            string damageStat = type.ToString() + DamageSuffix;
+            float baseDamage = statCollection.GetStatValue(damageStat);
+            if (baseDamage <= 0f) continue;
+
+            string multiplierStat = type.ToString() + DamageMultiplierSuffix;
+            float multiplier = 1f + statCollection.GetStatValue(multiplierStat) / 100f;
+            instances.Add(new DamageInstance(type, baseDamage * multiplier));
+        }
+
+        if (instances.Count == 0)
+        {
+            float legacyDamage = statCollection.GetStatValue(DamageStatName);
+            if (legacyDamage > 0f)
+                instances.Add(new DamageInstance(DamageType.Physical, legacyDamage));
+        }
+
+        return instances;
+    }
+
     public void Attack(Enemy enemy)
     {
         if (enemy == null || enemy.CombatStats == null || !enemy.CombatStats.IsAlive)
@@ -137,7 +186,7 @@ public class AllyCombat
             return;
         }
 
-        enemy.CombatStats.TakeDamage(GetDamage());
+        enemy.CombatStats.TakeDamage(BuildAttackInstances());
     }
 
     private Enemy GetRandomEnemy(IReadOnlyList<Enemy> enemies)

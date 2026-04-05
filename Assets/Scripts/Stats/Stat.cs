@@ -2,11 +2,9 @@ using UnityEngine;
 
 public enum StatType
 {
-    Stat,
-    Attribute,
-    Resistance,
-    Buff,
-    Debuff
+    Damaging,
+    Defensive,
+    Resistance
 }
 
 
@@ -15,5 +13,8 @@ public class Stat : ScriptableObject
 {
     [SerializeField] private string statName;
     [SerializeField] private StatType statType;
+    [SerializeField] private float baseValue;
     public string StatName => statName;
+    public StatType StatType => statType;
+    public float BaseValue => baseValue;
 }

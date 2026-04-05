@@ -8,6 +8,7 @@ public class AllySelectButton : MonoBehaviour
     [SerializeField] private Color selectedColor = Color.green;
     [SerializeField] private Color unselectedColor = Color.white;
     [SerializeField] private TextMeshProUGUI nameLabel;
+    [SerializeField] private TextMeshProUGUI levelText;
 
     private bool useForCombatSelection;
     private int maxCombatPartySize = 1;
@@ -49,11 +50,33 @@ public class AllySelectButton : MonoBehaviour
         }
         if (nameLabel != null)
         {
-            nameLabel.text = ally != null ? ally.name : "Empty Slot";
+            nameLabel.text = ally != null ? ally.AllyName : "Empty Slot";
         }
+        SetLevelText();
+        SetNameText();
         RefreshVisualState();
     }
-
+    private void SetLevelText()
+    {
+        if (levelText != null)
+        {
+            levelText.text = ally != null ? $"Lvl {ally.Level}" : "";
+        }
+    }
+    private void SetNameText()
+    {
+        if (nameLabel != null)
+        {
+            nameLabel.text = ally != null ? ally.AllyName : "Empty Slot";
+        }
+    }
+    public void UpdateLevelText()
+    {
+        if (ally != null)
+        {
+            SetLevelText();
+        }
+    }
     private void RefreshVisualState()
     {
         if (icon == null)

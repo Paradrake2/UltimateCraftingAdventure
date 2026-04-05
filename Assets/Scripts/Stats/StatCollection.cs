@@ -78,4 +78,15 @@ public class StatCollection
         StatValue existingStat = stats.Find(s => s.Stat.StatName == statName);
         return existingStat != null ? existingStat.Value : 0f;
     }
+    public StatValue GetRandomStat()
+    {
+        if (stats == null || stats.Count == 0) return null;
+        int index = Random.Range(0, stats.Count);
+        return stats[index];
+    }
+    public void AddStat(StatValue statValue)
+    {
+        if (statValue == null || statValue.Stat == null) return;
+        SetStat(statValue.Stat, statValue.Value);
+    }
 }

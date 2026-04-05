@@ -146,5 +146,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   equipment: {fileID: 0}
-  sprite: {fileID: 0}
+  icon: {fileID: 8332985657893430610}
   baseSprite: {fileID: 0}

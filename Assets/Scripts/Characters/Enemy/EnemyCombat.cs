@@ -9,6 +9,9 @@ public class EnemyCombat
     private const string HealthStatName = "Health";
     private const float MinimumAttackInterval = 0.01f;
     private const float MinimumHealth = 1f;
+    private const string DamageSuffix = "Damage";
+    private const string ResistanceSuffix = "Resistance";
+    private const string DamageMultiplierSuffix = "DamageMultiplier";
 
     [SerializeField] private StatCollection statCollection = new StatCollection();
     [SerializeField] private double currentHealth;
@@ -88,7 +91,25 @@ public class EnemyCombat
         return GetRandomLivingAlly(allies);
     }
 
-    public void TakeDamage(double damage)
+    public void TakeDamage(System.Collections.Generic.IReadOnlyList<DamageInstance> instances)
+    {
+        if (instances == null || instances.Count == 0) return;
+
+        double totalDamage = 0d;
+        for (int i = 0; i < instances.Count; i++)
+        {
+            DamageInstance hit = instances[i];
+            string resistStat = hit.Type.ToString() + ResistanceSuffix;
+            float resistance = statCollection != null
+                ? Mathf.Clamp(statCollection.GetStatValue(resistStat), 0f, 100f)
+                : 0f;
+            totalDamage += hit.Amount * (1f - resistance / 100f);
+        }
+
+        ApplyDamageToHealthPool(totalDamage);
+    }
+
+    private void ApplyDamageToHealthPool(double damage)
     {
         if (CurrentBarrier > 0)
         {
@@ -106,6 +127,32 @@ public class EnemyCombat
         }
     }
 
+    public System.Collections.Generic.List<DamageInstance> BuildAttackInstances()
+    {
+        var instances = new System.Collections.Generic.List<DamageInstance>();
+        if (statCollection == null) return instances;
+
+        foreach (DamageType type in System.Enum.GetValues(typeof(DamageType)))
+        {
+            string damageStat = type.ToString() + DamageSuffix;
+            float baseDamage = statCollection.GetStatValue(damageStat);
+            if (baseDamage <= 0f) continue;
+
+            string multiplierStat = type.ToString() + DamageMultiplierSuffix;
+            float multiplier = 1f + statCollection.GetStatValue(multiplierStat) / 100f;
+            instances.Add(new DamageInstance(type, baseDamage * multiplier));
+        }
+
+        if (instances.Count == 0)
+        {
+            float legacyDamage = statCollection.GetStatValue(DamageStatName);
+            if (legacyDamage > 0f)
+                instances.Add(new DamageInstance(DamageType.Physical, legacyDamage));
+        }
+
+        return instances;
+    }
+
     public void Attack(Ally ally)
     {
         if (ally == null || ally.CombatStats == null || !ally.CombatStats.IsAlive)
@@ -113,7 +160,7 @@ public class EnemyCombat
             return;
         }
 
-        ally.CombatStats.TakeDamage(GetDamage());
+        ally.CombatStats.TakeDamage(BuildAttackInstances());
     }
 
     private Ally GetRandomLivingAlly(IReadOnlyList<Ally> allies)

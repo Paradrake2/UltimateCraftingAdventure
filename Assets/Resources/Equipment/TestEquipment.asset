@@ -13,8 +13,17 @@ MonoBehaviour:
   m_Name: TestEquipment
   m_EditorClassIdentifier: 
   equipmentName: 
-  icon: {fileID: 0}
+  icon: {fileID: 3969780523071200563, guid: 0eeaaf72e29388d4483e0b57972d1cbd, type: 3}
   stats:
     stats: []
   equipmentType: 0
   tags: []
+  statModifier:
+    rarity: 0
+  rarity: 0
+  tag: {fileID: 0}
+  id: 
+  enchantments: []
+  augments: []
+  reinforcementLevel: 0
+  refundItems: []

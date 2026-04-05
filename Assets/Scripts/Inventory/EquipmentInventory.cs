@@ -1,24 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EquipmentInventory : MonoBehaviour
+[CreateAssetMenu(fileName = "EquipmentInventory", menuName = "Inventory/Equipment Inventory")]
+public class EquipmentInventory : ScriptableObject
 {
-    private static EquipmentInventory _instance;
     [SerializeField] private List<Equipment> ownedEquipment = new List<Equipment>();
     public IReadOnlyList<Equipment> OwnedEquipment => ownedEquipment;
-    public static EquipmentInventory Instance => _instance;
 
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            _instance = this;
-        }
-    }
 
     public void AddEquipment(Equipment equipment)
     {
@@ -32,5 +20,9 @@ public class EquipmentInventory : MonoBehaviour
     {
         equipment = ownedEquipment.Find(e => e.ID == equipmentID);
         return equipment != null;
+    }
+    public void RemoveEquipment(Equipment equipment)
+    {
+        ownedEquipment.Remove(equipment);
     }
 }

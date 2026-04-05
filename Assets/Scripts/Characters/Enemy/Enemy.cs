@@ -7,11 +7,14 @@ public class Enemy : ScriptableObject
 	[SerializeField] private Sprite icon;
 	[SerializeField] private StatCollection stats = new StatCollection();
 	[SerializeField] private EnemyCombat combatStats = new EnemyCombat();
+	[SerializeField] private EnemyLootTable lootTable = new EnemyLootTable();
 
 	public string EnemyName => string.IsNullOrWhiteSpace(enemyName) ? name : enemyName;
 	public Sprite Icon => icon;
 	public StatCollection Stats => stats;
 	public EnemyCombat CombatStats => combatStats;
+	public EnemyLootTable LootTable => lootTable;
+
 
 	public void Initialize(string newEnemyName, Sprite newIcon, StatCollection newStats)
 	{
@@ -39,5 +42,31 @@ public class Enemy : ScriptableObject
 	public void RecalculateStats()
 	{
 		combatStats?.Initialize(stats);
+	}
+	public void DropLoot()
+	{
+		if (lootTable != null)
+		{
+			var loot = lootTable.GetLootDrop();
+			if (loot != null)
+			{
+				if (loot is ItemQuantity itemQuantity)
+				{
+					ItemInventory.Instance.AddItem(itemQuantity.Item, itemQuantity.Quantity);
+				}
+				else if (loot is Equipment equipment)
+				{
+					Debug.Log($"Enemy dropped equipment: {equipment.EquipmentName}");
+				}
+				else
+				{
+					Debug.Log("Enemy dropped an unknown type of loot.");
+				}
+			}
+			else
+			{
+				Debug.Log("Enemy dropped no loot.");
+			}
+		}
 	}
 }

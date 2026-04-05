@@ -1,0 +1,128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ebb41921b91cbe41997ad6e1dcd10b7, type: 3}
+  m_Name: MetalScrapperConfig
+  m_EditorClassIdentifier: 
+  tiers:
+  - minLevel: 0
+    maxLevel: 10
+    materials:
+    - {fileID: 11400000, guid: 04a0756b3f116e643bde853f1c596015, type: 2}
+  - minLevel: 11
+    maxLevel: 20
+    materials:
+    - {fileID: 11400000, guid: 40002de8ad6f89d418424e1518e1c4e5, type: 2}
+  - minLevel: 21
+    maxLevel: 30
+    materials:
+    - {fileID: 11400000, guid: c864a18e1437cb441a8b928e6583d853, type: 2}
+  - minLevel: 31
+    maxLevel: 40
+    materials:
+    - {fileID: 11400000, guid: 8013277fa0ed0f14db9c6adee5398be1, type: 2}
+  - minLevel: 41
+    maxLevel: 50
+    materials:
+    - {fileID: 11400000, guid: cf18cd50436f3fe4e9d25251eb23029d, type: 2}
+  - minLevel: 51
+    maxLevel: 60
+    materials:
+    - {fileID: 11400000, guid: 71fa0fa981ced0544ae844843817bf6d, type: 2}
+  - minLevel: 61
+    maxLevel: 70
+    materials:
+    - {fileID: 11400000, guid: 0cbb1859e45195c47b0436473c15c34f, type: 2}
+  - minLevel: 71
+    maxLevel: 80
+    materials:
+    - {fileID: 11400000, guid: 1653bfa6dc7811a4881d3a6cacc85056, type: 2}
+  - minLevel: 81
+    maxLevel: 90
+    materials:
+    - {fileID: 11400000, guid: dc3a7788d14e4a6469d8d3f2bcbaa7d6, type: 2}
+  - minLevel: 91
+    maxLevel: 100
+    materials:
+    - {fileID: 11400000, guid: 5770d32d955c66647ba4d2e2e7d268dc, type: 2}
+  - minLevel: 101
+    maxLevel: 110
+    materials:
+    - {fileID: 11400000, guid: e42af7da532f27841abc55fa8bcc4dae, type: 2}
+  - minLevel: 111
+    maxLevel: 120
+    materials:
+    - {fileID: 11400000, guid: 108f0ca9a548a8b458aca58d97058cf7, type: 2}
+  - minLevel: 121
+    maxLevel: 130
+    materials:
+    - {fileID: 11400000, guid: 0fecd2539edf0fa4395279a8d760e90b, type: 2}
+  - minLevel: 131
+    maxLevel: 140
+    materials:
+    - {fileID: 11400000, guid: 2c5aacf9170946b48bd32417a578738d, type: 2}
+  - minLevel: 141
+    maxLevel: 150
+    materials:
+    - {fileID: 11400000, guid: c12f768663b40f94184a2827d8841ac7, type: 2}
+  - minLevel: 151
+    maxLevel: 160
+    materials:
+    - {fileID: 11400000, guid: 65d651fdaed935545a4b99d650121289, type: 2}
+  - minLevel: 161
+    maxLevel: 170
+    materials:
+    - {fileID: 11400000, guid: bea370a28f371254e9ba782ed6df8202, type: 2}
+  - minLevel: 171
+    maxLevel: 180
+    materials:
+    - {fileID: 11400000, guid: 6c8e5d89aa116a742a7da7104c1aee65, type: 2}
+  - minLevel: 181
+    maxLevel: 190
+    materials:
+    - {fileID: 11400000, guid: 9031dc7ffbe4e504daebca4a4acdec5e, type: 2}
+  - minLevel: 171
+    maxLevel: 180
+    materials:
+    - {fileID: 11400000, guid: 5ddba107c04b7d342a660ca431247aec, type: 2}
+  rarityBonuses:
+  - rarity: 0
+    bonusMaterials:
+    - material: {fileID: 11400000, guid: af31d17508849e6468dd7174cb546715, type: 2}
+      quantity: 16
+  - rarity: 1
+    bonusMaterials:
+    - material: {fileID: 11400000, guid: e1f69b30aa7327b4a86bf182c844f116, type: 2}
+      quantity: 12
+  - rarity: 2
+    bonusMaterials:
+    - material: {fileID: 11400000, guid: 90b1324f6fee81a4da90a8f4569574c0, type: 2}
+      quantity: 8
+  - rarity: 3
+    bonusMaterials:
+    - material: {fileID: 11400000, guid: 5cdf3b7df25ff35449c5f468fc3b350d, type: 2}
+      quantity: 6
+  - rarity: 4
+    bonusMaterials:
+    - material: {fileID: 11400000, guid: 6cc34e7182dfb994abde47e08cd1bbb9, type: 2}
+      quantity: 4
+  - rarity: 5
+    bonusMaterials:
+    - material: {fileID: 11400000, guid: f20f497c0a52a804c91f5c9faada1860, type: 2}
+      quantity: 3
+  - rarity: 6
+    bonusMaterials:
+    - material: {fileID: 11400000, guid: 4e6425806a2faab4ab06c3d12795b958, type: 2}
+      quantity: 2
+  - rarity: 6
+    bonusMaterials:
+    - material: {fileID: 11400000, guid: 5c95b7bf7aca3c44d9ef302f9700a3f7, type: 2}
+      quantity: 1

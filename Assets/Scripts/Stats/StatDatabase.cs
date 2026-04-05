@@ -29,6 +29,16 @@ public class StatDatabase : ScriptableObject
             return null;
         }
     }
+    public Stat GetRandomStat()
+    {
+        if (stats.Count == 0)
+        {
+            Debug.LogWarning("No stats available in the database.");
+            return null;
+        }
+        int randomIndex = UnityEngine.Random.Range(0, stats.Count);
+        return stats[randomIndex];
+    }
     public IReadOnlyList<Stat> Stats => stats.AsReadOnly();
     private static StatDatabase instance;
     public static StatDatabase Instance
