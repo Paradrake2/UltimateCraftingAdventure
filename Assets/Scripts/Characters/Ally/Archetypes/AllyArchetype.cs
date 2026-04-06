@@ -9,10 +9,42 @@ public class AllyArchetype : ScriptableObject
     [SerializeField] private Sprite icon;
     [SerializeField] private StatCollection baseStats = new StatCollection();
 
+    [Header("Skills")]
+    [Tooltip("Skills automatically given to allies of this archetype when created.")]
+    [SerializeField] private List<AllySkill> defaultSkills = new List<AllySkill>();
+
+    [Tooltip("Skill tags this archetype is allowed to use. Leave empty to allow all skills.")]
+    [SerializeField] private List<SkillTag> allowedSkillTags = new List<SkillTag>();
+
     public string ArchetypeName => archetypeName;
     public IReadOnlyList<AllyRestrictionRule> Rules => rules;
     public Sprite Icon => icon;
     public StatCollection BaseStats => baseStats;
+    public IReadOnlyList<AllySkill> DefaultSkills => defaultSkills;
+    public IReadOnlyList<SkillTag> AllowedSkillTags => allowedSkillTags;
+
+    /// <summary>
+    /// Returns true if this archetype permits the given skill.
+    /// If <see cref="AllowedSkillTags"/> is empty, all skills are allowed.
+    /// Otherwise the skill must have at least one matching tag.
+    /// </summary>
+    public bool CanEquipSkill(AllySkill skill, out string failureReason)
+    {
+        failureReason = null;
+        if (skill == null) return true;
+        if (allowedSkillTags == null || allowedSkillTags.Count == 0) return true;
+
+        if (skill.Tags != null)
+        {
+            foreach (SkillTag tag in skill.Tags)
+            {
+                if (allowedSkillTags.Contains(tag)) return true;
+            }
+        }
+
+        failureReason = $"'{archetypeName}' cannot use skill '{skill.name}': no matching skill tag.";
+        return false;
+    }
 
     public bool CanEquip(Ally ally, AllyEquipmentInventory inventory, Equipment equipment, out string failureReason)
     {

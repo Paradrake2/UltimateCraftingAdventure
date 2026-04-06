@@ -7,7 +7,7 @@ public class Enemy : ScriptableObject
 	[SerializeField] private Sprite icon;
 	[SerializeField] private StatCollection stats = new StatCollection();
 	[SerializeField] private EnemyCombat combatStats = new EnemyCombat();
-	[SerializeField] private EnemyLootTable lootTable = new EnemyLootTable();
+	[SerializeField] private EnemyLootTable lootTable;
 
 	public string EnemyName => string.IsNullOrWhiteSpace(enemyName) ? name : enemyName;
 	public Sprite Icon => icon;

@@ -17,9 +17,13 @@ public class EnemyCombat
     [SerializeField] private double currentHealth;
     [SerializeField] private double currentBarrier = 0d;
     [SerializeField] private float baseAttackSpeed = 1f;
+    [SerializeField] private AttackTargeting attackTargeting = AttackTargeting.Single;
+    [SerializeField] private int maxTargets = 2;
 
     public StatCollection StatCollection => statCollection;
     public float BaseAttackSpeed => baseAttackSpeed;
+    public AttackTargeting AttackTargeting => attackTargeting;
+    public int MaxTargets => maxTargets;
     public double CurrentHealth
     {
         get => currentHealth;
@@ -161,6 +165,68 @@ public class EnemyCombat
         }
 
         ally.CombatStats.TakeDamage(BuildAttackInstances());
+    }
+
+    /// <summary>
+    /// Attacks based on <see cref="AttackTargeting"/>.
+    /// Returns true if at least one target was attacked.
+    /// </summary>
+    public bool AttackTargets(IReadOnlyList<Ally> allies)
+    {
+        if (!IsAlive || allies == null || allies.Count == 0) return false;
+
+        var instances = BuildAttackInstances();
+
+        if (attackTargeting == AttackTargeting.All)
+        {
+            bool attacked = false;
+            for (int i = 0; i < allies.Count; i++)
+            {
+                Ally a = allies[i];
+                if (a != null && a.CombatStats != null && a.CombatStats.IsAlive)
+                {
+                    a.CombatStats.TakeDamage(instances);
+                    attacked = true;
+                }
+            }
+            return attacked;
+        }
+
+        if (attackTargeting == AttackTargeting.Multi)
+        {
+            return AttackMultipleTargets(allies, instances);
+        }
+
+        Ally target = GetAttackTarget(allies);
+        if (target == null) return false;
+        Attack(target);
+        return true;
+    }
+
+    private bool AttackMultipleTargets(IReadOnlyList<Ally> allies, System.Collections.Generic.List<DamageInstance> instances)
+    {
+        // Collect living targets into a temporary list
+        var pool = new System.Collections.Generic.List<Ally>(allies.Count);
+        for (int i = 0; i < allies.Count; i++)
+        {
+            Ally a = allies[i];
+            if (a != null && a.CombatStats != null && a.CombatStats.IsAlive)
+                pool.Add(a);
+        }
+
+        int count = Mathf.Min(maxTargets, pool.Count);
+        if (count <= 0) return false;
+
+        for (int i = 0; i < count; i++)
+        {
+            int randomIndex = UnityEngine.Random.Range(i, pool.Count);
+            // Swap so we don't pick the same target twice
+            Ally chosen = pool[randomIndex];
+            pool[randomIndex] = pool[i];
+            pool[i] = chosen;
+            chosen.CombatStats.TakeDamage(instances);
+        }
+        return true;
     }
 
     private Ally GetRandomLivingAlly(IReadOnlyList<Ally> allies)

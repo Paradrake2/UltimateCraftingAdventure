@@ -32,3 +32,14 @@ MonoBehaviour:
       value: 10
     - stat: {fileID: 11400000, guid: 8c575f94fcaf6a14eb71786ea86a4fa5, type: 2}
       value: 10
+    - stat: {fileID: 11400000, guid: 41da006ae985cb34aa28ebd734490e52, type: 2}
+      value: 20
+  defaultSkills:
+  - {fileID: 11400000, guid: c9e2a23b3b3885444a7e774b48ef4d19, type: 2}
+  allowedSkillTags:
+  - {fileID: 11400000, guid: 687640dbdacad07469f6710b96c93113, type: 2}
+  - {fileID: 11400000, guid: c94ec85639b8b2b4783bff51e29789f4, type: 2}
+  - {fileID: 11400000, guid: f23d0a5aaf2cd0445a7faa5fc1c81353, type: 2}
+  - {fileID: 11400000, guid: 40ceaf838163e1348bc9ba154fc419b8, type: 2}
+  - {fileID: 11400000, guid: c7dd1d277507cba48a5b97b86d9570b2, type: 2}
+  - {fileID: 11400000, guid: 107e5f7105747fd47ab4ce57010d7150, type: 2}

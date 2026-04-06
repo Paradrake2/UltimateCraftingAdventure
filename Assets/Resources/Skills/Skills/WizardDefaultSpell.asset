@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06dedeb552bce7743a72738c839011f2, type: 3}
+  m_Name: WizardDefaultSpell
+  m_EditorClassIdentifier: 
+  cooldown: 1.1
+  tags:
+  - {fileID: 11400000, guid: 687640dbdacad07469f6710b96c93113, type: 2}
+  - {fileID: 11400000, guid: 107e5f7105747fd47ab4ce57010d7150, type: 2}
+  scalesWithAttackSpeed: 1
+  damageEntries:
+  - damageType: 2
+    multiplier: 1

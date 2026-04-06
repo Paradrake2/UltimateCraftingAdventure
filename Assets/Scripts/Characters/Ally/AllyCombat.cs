@@ -17,9 +17,15 @@ public class AllyCombat
     [SerializeField] private double currentHealth;
     [SerializeField] private float baseAttackSpeed = 1f;
     [SerializeField] private double currentBarrier = 0d;
+    [SerializeField] private AttackTargeting attackTargeting = AttackTargeting.Single;
+    [SerializeField] private int maxTargets = 2;
+    [SerializeField] private List<AllySkillSlot> skillSlots = new List<AllySkillSlot>();
 
     public StatCollection StatCollection => statCollection;
     public float BaseAttackSpeed => baseAttackSpeed;
+    public AttackTargeting AttackTargeting => attackTargeting;
+    public int MaxTargets => maxTargets;
+    public IReadOnlyList<AllySkillSlot> SkillSlots => skillSlots;
     public double CurrentHealth
     {
         get => currentHealth;
@@ -41,6 +47,11 @@ public class AllyCombat
     {
         CurrentHealth = GetMaxHealth();
         CurrentBarrier = GetMaxBarrier();
+        if (skillSlots != null)
+        {
+            for (int i = 0; i < skillSlots.Count; i++)
+                skillSlots[i]?.ResetCooldown(statCollection);
+        }
     }
 
     public float GetAttackInterval()
@@ -187,6 +198,119 @@ public class AllyCombat
         }
 
         enemy.CombatStats.TakeDamage(BuildAttackInstances());
+    }
+
+    /// <summary>
+    /// Attacks based on <see cref="AttackTargeting"/>.
+    /// Returns true if at least one target was attacked.
+    /// </summary>
+    public bool AttackTargets(IReadOnlyList<Enemy> enemies)
+    {
+        if (!IsAlive || enemies == null || enemies.Count == 0) return false;
+
+        var instances = BuildAttackInstances();
+
+        if (attackTargeting == AttackTargeting.All)
+        {
+            bool attacked = false;
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                Enemy e = enemies[i];
+                if (e != null && e.CombatStats != null && e.CombatStats.IsAlive)
+                {
+                    e.CombatStats.TakeDamage(instances);
+                    attacked = true;
+                }
+            }
+            return attacked;
+        }
+
+        if (attackTargeting == AttackTargeting.Multi)
+        {
+            return AttackMultipleTargets(enemies, instances);
+        }
+
+        Enemy target = GetAttackTarget(enemies);
+        if (target == null) return false;
+        Attack(target);
+        return true;
+    }
+
+    private bool AttackMultipleTargets(IReadOnlyList<Enemy> enemies, System.Collections.Generic.List<DamageInstance> instances)
+    {
+        // Collect living targets into a temporary list
+        var pool = new System.Collections.Generic.List<Enemy>(enemies.Count);
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            Enemy e = enemies[i];
+            if (e != null && e.CombatStats != null && e.CombatStats.IsAlive)
+                pool.Add(e);
+        }
+
+        int count = Mathf.Min(maxTargets, pool.Count);
+        if (count <= 0) return false;
+
+        for (int i = 0; i < count; i++)
+        {
+            int randomIndex = UnityEngine.Random.Range(i, pool.Count);
+            // Swap so we don't pick the same target twice
+            Enemy chosen = pool[randomIndex];
+            pool[randomIndex] = pool[i];
+            pool[i] = chosen;
+            chosen.CombatStats.TakeDamage(instances);
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Ticks all skill cooldowns by <paramref name="deltaTime"/> and fires any that become ready.
+    /// Returns <c>true</c> if at least one skill was executed.
+    /// </summary>
+    public bool TickAndUseSkills(SkillContext context, float deltaTime)
+    {
+        if (skillSlots == null || skillSlots.Count == 0) return false;
+
+        bool anyUsed = false;
+        for (int i = 0; i < skillSlots.Count; i++)
+        {
+            AllySkillSlot slot = skillSlots[i];
+            if (slot == null || slot.Skill == null) continue;
+
+            if (slot.Tick(deltaTime) && IsAlive)
+            {
+                slot.Skill.Execute(context);
+                slot.ResetCooldown(statCollection);
+                anyUsed = true;
+            }
+        }
+        return anyUsed;
+    }
+
+    /// <summary>
+    /// Replaces all skill slots with slots built from the provided skills.
+    /// Called by <see cref="AllyFactory"/> during ally creation.
+    /// </summary>
+    public void SetSkills(IReadOnlyList<AllySkill> skills)
+    {
+        skillSlots ??= new List<AllySkillSlot>();
+        skillSlots.Clear();
+        if (skills == null) return;
+        for (int i = 0; i < skills.Count; i++)
+        {
+            if (skills[i] != null)
+                skillSlots.Add(new AllySkillSlot(skills[i]));
+        }
+    }
+
+    /// <summary>
+    /// Replaces the skill in the given slot. Pass <c>null</c> to clear the slot.
+    /// Returns <c>false</c> if <paramref name="slotIndex"/> is out of range.
+    /// </summary>
+    public bool SetSkillInSlot(int slotIndex, AllySkill skill)
+    {
+        if (skillSlots == null || slotIndex < 0 || slotIndex >= skillSlots.Count) return false;
+        skillSlots[slotIndex] = skill != null ? new AllySkillSlot(skill) : new AllySkillSlot();
+        return true;
     }
 
     private Enemy GetRandomEnemy(IReadOnlyList<Enemy> enemies)

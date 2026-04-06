@@ -35,6 +35,7 @@ public static class AllyFactory
         Sprite icon = request.IconOverride != null ? request.IconOverride : request.Archetype.Icon;
 
         ally = Ally.CreateRuntime(allyName, request.Archetype, icon, stats);
+        ApplyDefaultSkills(ally);
 
         if (request.StartingEquipment != null)
         {
@@ -88,6 +89,7 @@ public static class AllyFactory
         }
 
         ally = Ally.CreateRuntime(allyName, archetype, archetype.Icon, stats);
+        ApplyDefaultSkills(ally);
 
         if (!ally.ValidateLoadout(out failureReason))
         {
@@ -140,5 +142,11 @@ public static class AllyFactory
             if (item.EquipmentType != equipmentType) continue;
             ally.TryEquip(item, out _);
         }
+    }
+
+    private static void ApplyDefaultSkills(Ally ally)
+    {
+        if (ally == null || ally.Archetype == null || ally.CombatStats == null) return;
+        ally.CombatStats.SetSkills(ally.Archetype.DefaultSkills);
     }
 }

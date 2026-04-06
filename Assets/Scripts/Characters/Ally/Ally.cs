@@ -33,7 +33,11 @@ public class Ally : ScriptableObject
 
         equipmentInventory ??= new AllyEquipmentInventory();
         combatStats ??= new AllyCombat();
-    combatStats.Initialize(stats);
+        combatStats.Initialize(stats);
+
+        // Apply archetype default skills if none are set yet (safety net for any creation path)
+        if (archetype != null && combatStats.SkillSlots.Count == 0 && archetype.DefaultSkills != null && archetype.DefaultSkills.Count > 0)
+            combatStats.SetSkills(archetype.DefaultSkills);
     }
 
     public static Ally CreateRuntime(string name, AllyArchetype archetype, Sprite icon = null, StatCollection stats = null)
@@ -103,6 +107,34 @@ public class Ally : ScriptableObject
         if (archetype == null) return true;
         return archetype.ValidateLoadout(this, equipmentInventory, out failureReason);
     }
+    /// <summary>
+    /// Replaces the skill in a slot, enforcing archetype tag restrictions.
+    /// Pass <c>null</c> as <paramref name="newSkill"/> to clear the slot.
+    /// </summary>
+    public bool TryReplaceSkill(int slotIndex, AllySkill newSkill, out string failureReason)
+    {
+        failureReason = null;
+
+        if (combatStats == null)
+        {
+            failureReason = "Cannot replace skill: ally has no combat stats.";
+            return false;
+        }
+
+        if (newSkill != null && archetype != null && !archetype.CanEquipSkill(newSkill, out failureReason))
+        {
+            return false;
+        }
+
+        if (!combatStats.SetSkillInSlot(slotIndex, newSkill))
+        {
+            failureReason = $"Cannot replace skill: slot index {slotIndex} is out of range (ally has {combatStats.SkillSlots?.Count ?? 0} skill slots).";
+            return false;
+        }
+
+        return true;
+    }
+
     public void RecalculateStats()
     {
         combatStats?.Initialize(stats);

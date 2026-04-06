@@ -21,8 +21,8 @@ public class Combat : MonoBehaviour
     [SerializeField] private bool encounterCompleted;
 
     private readonly List<Ally> livingAlliesBuffer = new List<Ally>();
-    private readonly List<Coroutine> allyAttackRoutines = new List<Coroutine>();
     private readonly List<Coroutine> enemyAttackRoutines = new List<Coroutine>();
+    private readonly List<Coroutine> allySkillRoutines = new List<Coroutine>();
 
     public CombatMap Map => map;
     public Ally[] Allies => allies;
@@ -101,22 +101,21 @@ public class Combat : MonoBehaviour
 
         InitializeAlliesForCombat();
         isCombatActive = true;
-        StartAllyAttackLoops();
+        StartAllySkillLoops();
         SpawnNextWave();
     }
 
     public void EndCombat()
     {
         isCombatActive = false;
-        StopAttackLoops(allyAttackRoutines);
         StopAttackLoops(enemyAttackRoutines);
-        
+        StopAttackLoops(allySkillRoutines);
     }
     public void ForceEndCombat()
     {
         isCombatActive = false;
-        StopAttackLoops(allyAttackRoutines);
         StopAttackLoops(enemyAttackRoutines);
+        StopAttackLoops(allySkillRoutines);
         activeEnemies.Clear();
         currentWaveNumber = 0;
         defeatedRegularWaves = 0;
@@ -283,24 +282,47 @@ public class Combat : MonoBehaviour
         }
         StartCombat();
     }
-    private void StartAllyAttackLoops()
+    private void StartAllySkillLoops()
     {
-        StopAttackLoops(allyAttackRoutines);
+        StopAttackLoops(allySkillRoutines);
 
-        if (allies == null)
-        {
-            return;
-        }
+        if (allies == null) return;
 
         for (int i = 0; i < allies.Length; i++)
         {
             Ally ally = allies[i];
-            if (ally == null || ally.CombatStats == null)
+            if (ally == null || ally.CombatStats == null) continue;
+            if (ally.CombatStats.SkillSlots == null || ally.CombatStats.SkillSlots.Count == 0) continue;
+
+            allySkillRoutines.Add(StartCoroutine(RunAllySkillLoop(ally)));
+        }
+    }
+
+    private System.Collections.IEnumerator RunAllySkillLoop(Ally ally)
+    {
+        const float tickInterval = 0.1f;
+        var wait = new WaitForSeconds(tickInterval);
+
+        while (isCombatActive)
+        {
+            if (ally == null || ally.CombatStats == null || !ally.CombatStats.IsAlive)
             {
-                continue;
+                yield break;
             }
 
-            allyAttackRoutines.Add(StartCoroutine(RunAllyAttackLoop(ally)));
+            yield return wait;
+
+            if (!isCombatActive || ally.CombatStats == null || !ally.CombatStats.IsAlive)
+            {
+                yield break;
+            }
+
+            FillLivingAlliesBuffer();
+            var context = new SkillContext(ally, livingAlliesBuffer, activeEnemies);
+            if (ally.CombatStats.TickAndUseSkills(context, tickInterval))
+            {
+                ResolveCombatState();
+            }
         }
     }
 
@@ -325,33 +347,6 @@ public class Combat : MonoBehaviour
         }
     }
 
-    private System.Collections.IEnumerator RunAllyAttackLoop(Ally ally)
-    {
-        while (isCombatActive)
-        {
-            if (ally == null || ally.CombatStats == null || !ally.CombatStats.IsAlive)
-            {
-                yield break;
-            }
-
-            yield return new WaitForSeconds(ally.CombatStats.GetAttackInterval());
-
-            if (!isCombatActive || ally.CombatStats == null || !ally.CombatStats.IsAlive)
-            {
-                yield break;
-            }
-
-            Enemy target = ally.CombatStats.GetAttackTarget(activeEnemies);
-            if (target == null)
-            {
-                continue;
-            }
-
-            ally.CombatStats.Attack(target);
-            ResolveCombatState();
-        }
-    }
-
     private System.Collections.IEnumerator RunEnemyAttackLoop(Enemy enemy)
     {
         while (isCombatActive)
@@ -369,13 +364,11 @@ public class Combat : MonoBehaviour
             }
 
             FillLivingAlliesBuffer();
-            Ally target = enemy.CombatStats.GetAttackTarget(livingAlliesBuffer);
-            if (target == null)
+            if (!enemy.CombatStats.AttackTargets(livingAlliesBuffer))
             {
                 continue;
             }
 
-            enemy.CombatStats.Attack(target);
             ResolveCombatState();
         }
     }
