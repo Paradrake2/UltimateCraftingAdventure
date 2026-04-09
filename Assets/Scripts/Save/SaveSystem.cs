@@ -1,0 +1,323 @@
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
+
+/// <summary>
+/// Handles serializing runtime game state to JSON on disk and restoring it on
+/// load.  Call SaveSystem.Save() / SaveSystem.Load() from GameSaveManager or
+/// any other appropriate point in your game.
+/// </summary>
+public static class SaveSystem
+{
+    private const string SaveFileName = "save.json";
+    private static string SavePath => Path.Combine(Application.persistentDataPath, SaveFileName);
+
+    // ─── Public API ───────────────────────────────────────────────────────────
+
+    public static void Save()
+    {
+        var data = new SaveData();
+
+        // Collect every piece of equipment that needs to persist:
+        // both the unequipped pool and everything currently on an ally.
+        var seenIds = new HashSet<string>();
+
+        var equipInv = EquipmentInventory.Instance;
+        if (equipInv != null)
+        {
+            foreach (var e in equipInv.OwnedEquipment)
+            {
+                if (e == null) continue;
+                data.equipmentInventory.Add(EquipmentToSaveData(e));
+                if (!string.IsNullOrEmpty(e.ID)) seenIds.Add(e.ID);
+            }
+        }
+
+        // Also capture any equipment equipped on allies but not in the pool.
+        var allyManager = AllyManager.Instance;
+        if (allyManager != null)
+        {
+            foreach (var ally in allyManager.GetAllies())
+            {
+                if (ally?.EquipmentInventory == null) continue;
+                foreach (var e in ally.EquipmentInventory.GetAllEquipped())
+                {
+                    if (e == null || string.IsNullOrEmpty(e.ID) || seenIds.Contains(e.ID)) continue;
+                    data.equipmentInventory.Add(EquipmentToSaveData(e));
+                    seenIds.Add(e.ID);
+                }
+            }
+
+            foreach (var ally in allyManager.GetAllies())
+                if (ally != null) data.allies.Add(AllyToSaveData(ally));
+        }
+
+        var itemInv = ItemInventory.Instance;
+        if (itemInv != null)
+        {
+            foreach (var iq in itemInv.OwnedItems)
+                if (iq?.Item != null)
+                    data.itemInventory.Add(new ItemQuantitySaveData { itemName = iq.Item.name, quantity = iq.Quantity });
+        }
+
+        File.WriteAllText(SavePath, JsonUtility.ToJson(data, prettyPrint: true));
+        Debug.Log($"[SaveSystem] Saved to {SavePath}");
+    }
+
+    public static bool Load()
+    {
+        if (!File.Exists(SavePath))
+        {
+            Debug.Log("[SaveSystem] No save file found, using default starting state.");
+            return false;
+        }
+
+        var data = JsonUtility.FromJson<SaveData>(File.ReadAllText(SavePath));
+        if (data == null) return false;
+
+        // Equipment must be loaded first so ally slots can reference it by ID.
+        var equipmentById = new Dictionary<string, Equipment>();
+        var equipInv = EquipmentInventory.Instance;
+        if (equipInv != null)
+        {
+            equipInv.Clear();
+            foreach (var ed in data.equipmentInventory)
+            {
+                var e = EquipmentFromSaveData(ed);
+                if (e == null) continue;
+                equipInv.AddEquipment(e);
+                if (!string.IsNullOrEmpty(ed.id))
+                    equipmentById[ed.id] = e;
+            }
+        }
+
+        var itemInv = ItemInventory.Instance;
+        if (itemInv != null)
+        {
+            itemInv.Clear();
+            foreach (var id in data.itemInventory)
+            {
+                var item = GameAssetRegistry.Instance?.FindItem(id.itemName);
+                if (item != null)
+                    itemInv.AddItem(item, id.quantity);
+                else
+                    Debug.LogWarning($"[SaveSystem] Item not found in registry: '{id.itemName}'");
+            }
+        }
+
+        var allyManager = AllyManager.Instance;
+        if (allyManager != null)
+        {
+            allyManager.ClearAllies();
+            foreach (var ad in data.allies)
+            {
+                var ally = AllyFromSaveData(ad, equipmentById);
+                if (ally != null) allyManager.AddAlly(ally);
+            }
+        }
+
+        Debug.Log("[SaveSystem] Load complete.");
+        return true;
+    }
+
+    // ─── Equipment ────────────────────────────────────────────────────────────
+
+    private static EquipmentSaveData EquipmentToSaveData(Equipment e)
+    {
+        var data = new EquipmentSaveData
+        {
+            id                 = e.ID,
+            equipmentName      = e.EquipmentName,
+            equipmentType      = (int)e.EquipmentType,
+            rarity             = (int)e.Rarity,
+            level              = e.Level,
+            reinforcementLevel = e.ReinforcementLevel,
+            generationModifier = (int)e.GenerationModifier,
+            singleTagName      = e.Tag != null ? e.Tag.name : null,
+            iconName           = e.Icon != null ? e.Icon.name : null,
+        };
+
+        if (e.BaseStats != null)
+            foreach (var sv in e.BaseStats.Stats)
+                if (sv?.Stat != null)
+                    data.baseStats.Add(new StatValueSaveData { statName = sv.Stat.StatName, value = sv.Value });
+
+        if (e.Stats != null)
+            foreach (var sv in e.Stats.Stats)
+                if (sv?.Stat != null)
+                    data.stats.Add(new StatValueSaveData { statName = sv.Stat.StatName, value = sv.Value });
+
+        if (e.Tags != null)
+            foreach (var tag in e.Tags)
+                if (tag != null) data.tagNames.Add(tag.name);
+
+        if (e.Enchantments != null)
+            foreach (var h in e.Enchantments)
+                if (h?.Enchantment != null)
+                    data.enchantments.Add(new EnchantmentSaveData { enchantmentName = h.Enchantment.name, beenUsed = h.BeenUsed });
+
+        if (e.Augments != null)
+            foreach (var h in e.Augments)
+                if (h?.Augment != null)
+                    data.augmentNames.Add(h.Augment.name);
+
+        return data;
+    }
+
+    private static Equipment EquipmentFromSaveData(EquipmentSaveData data)
+    {
+        var registry = GameAssetRegistry.Instance;
+        if (registry == null)
+        {
+            Debug.LogError("[SaveSystem] GameAssetRegistry not found in Resources.");
+            return null;
+        }
+
+        var baseStats = BuildStatCollection(data.baseStats, registry);
+        var stats     = BuildStatCollection(data.stats, registry);
+        var icon      = string.IsNullOrEmpty(data.iconName) ? null : registry.FindSprite(data.iconName);
+
+        var equipment = ScriptableObject.CreateInstance<Equipment>();
+        equipment.RestoreFromSave(
+            data.id,
+            data.equipmentName,
+            (EquipmentType)data.equipmentType,
+            (EquipmentRarity)data.rarity,
+            data.level,
+            data.reinforcementLevel,
+            (EquipmentGenerationModifier)data.generationModifier,
+            baseStats,
+            stats,
+            icon
+        );
+
+        if (data.tagNames != null)
+            foreach (var tagName in data.tagNames)
+            {
+                var tag = registry.FindTag(tagName);
+                if (tag != null) equipment.AddTag(tag);
+                else Debug.LogWarning($"[SaveSystem] EquipmentTag not found: '{tagName}'");
+            }
+
+        if (!string.IsNullOrEmpty(data.singleTagName))
+            equipment.SetTag(registry.FindTag(data.singleTagName));
+
+        if (data.enchantments != null)
+            foreach (var ed in data.enchantments)
+            {
+                var enchantment = registry.FindEnchantment(ed.enchantmentName);
+                if (enchantment == null)
+                {
+                    Debug.LogWarning($"[SaveSystem] Enchantment not found: '{ed.enchantmentName}'");
+                    continue;
+                }
+                var holder = new EquipmentEnchantmentHolder(enchantment);
+                if (ed.beenUsed) holder.MarkAsUsed();
+                equipment.AddEnchantmentHolder(holder);
+            }
+
+        if (data.augmentNames != null)
+            foreach (var augmentName in data.augmentNames)
+            {
+                var augment = registry.FindAugment(augmentName);
+                if (augment != null) equipment.AddAugment(augment);
+                else Debug.LogWarning($"[SaveSystem] Augment not found: '{augmentName}'");
+            }
+
+        return equipment;
+    }
+
+    // ─── Ally ─────────────────────────────────────────────────────────────────
+
+    private static AllySaveData AllyToSaveData(Ally ally)
+    {
+        var data = new AllySaveData
+        {
+            allyName      = ally.AllyName,
+            archetypeName = ally.Archetype != null ? ally.Archetype.name : null,
+            iconName      = ally.Icon != null ? ally.Icon.name : null,
+            xp            = ally.XP,
+            level         = ally.Level,
+            xpToNextLevel = ally.XPToNextLevel,
+        };
+
+        if (ally.Stats != null)
+            foreach (var sv in ally.Stats.Stats)
+                if (sv?.Stat != null)
+                    data.stats.Add(new StatValueSaveData { statName = sv.Stat.StatName, value = sv.Value });
+
+        var inv = ally.EquipmentInventory;
+        if (inv != null)
+            data.equipmentInventory = new AllyEquipmentSaveData
+            {
+                helmetId         = inv.Helmet?.ID,
+                chestplateId     = inv.Chestplate?.ID,
+                leggingsId       = inv.Leggings?.ID,
+                bootsId          = inv.Boots?.ID,
+                glovesId         = inv.Gloves?.ID,
+                bracersId        = inv.Bracers?.ID,
+                handSlot1Id      = inv.HandSlot1?.ID,
+                handSlot2Id      = inv.HandSlot2?.ID,
+                accessorySlot1Id = inv.AccessorySlot1?.ID,
+                accessorySlot2Id = inv.AccessorySlot2?.ID,
+            };
+
+        return data;
+    }
+
+    private static Ally AllyFromSaveData(AllySaveData data, Dictionary<string, Equipment> equipmentById)
+    {
+        var registry  = GameAssetRegistry.Instance;
+        var archetype = registry?.FindArchetype(data.archetypeName);
+        var icon      = string.IsNullOrEmpty(data.iconName) ? null : registry?.FindSprite(data.iconName);
+        var stats     = BuildStatCollection(data.stats, registry);
+
+        var ally = Ally.CreateRuntime(data.allyName, archetype, icon, stats);
+        ally.RestoreProgress(data.xp, data.level, data.xpToNextLevel, stats);
+
+        if (data.equipmentInventory != null)
+        {
+            var s = data.equipmentInventory;
+            ally.EquipmentInventory.RestoreSlots(
+                Lookup(s.helmetId, equipmentById),
+                Lookup(s.chestplateId, equipmentById),
+                Lookup(s.leggingsId, equipmentById),
+                Lookup(s.bootsId, equipmentById),
+                Lookup(s.glovesId, equipmentById),
+                Lookup(s.bracersId, equipmentById),
+                Lookup(s.handSlot1Id, equipmentById),
+                Lookup(s.handSlot2Id, equipmentById),
+                Lookup(s.accessorySlot1Id, equipmentById),
+                Lookup(s.accessorySlot2Id, equipmentById)
+            );
+        }
+
+        return ally;
+    }
+
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    private static StatCollection BuildStatCollection(List<StatValueSaveData> savedStats, GameAssetRegistry registry)
+    {
+        var collection = new StatCollection();
+        if (savedStats == null || registry == null) return collection;
+
+        foreach (var sd in savedStats)
+        {
+            var stat = registry.FindStat(sd.statName);
+            if (stat != null)
+                collection.SetStat(stat, sd.value);
+            else
+                Debug.LogWarning($"[SaveSystem] Stat not found in registry: '{sd.statName}'");
+        }
+
+        return collection;
+    }
+
+    private static Equipment Lookup(string id, Dictionary<string, Equipment> map)
+    {
+        if (string.IsNullOrEmpty(id)) return null;
+        map.TryGetValue(id, out var e);
+        return e;
+    }
+}

@@ -284,4 +284,32 @@ public class AllyEquipmentInventory
 		return (handSlot1 != null && handSlot1.EquipmentType == EquipmentType.Shield)
 			   || (handSlot2 != null && handSlot2.EquipmentType == EquipmentType.Shield);
 	}
+
+	/// <summary>
+	/// Directly sets all equipment slots from save data, bypassing validation.
+	/// Called by SaveSystem — do not call from other code.
+	/// </summary>
+	public void RestoreSlots(
+		Equipment savedHelmet,
+		Equipment savedChestplate,
+		Equipment savedLeggings,
+		Equipment savedBoots,
+		Equipment savedGloves,
+		Equipment savedBracers,
+		Equipment savedHandSlot1,
+		Equipment savedHandSlot2,
+		Equipment savedAccessorySlot1,
+		Equipment savedAccessorySlot2)
+	{
+		helmet        = savedHelmet;
+		chestplate    = savedChestplate;
+		leggings      = savedLeggings;
+		boots         = savedBoots;
+		gloves        = savedGloves;
+		bracers       = savedBracers;
+		handSlot1     = savedHandSlot1;
+		handSlot2     = savedHandSlot2;
+		accessorySlot1 = savedAccessorySlot1;
+		accessorySlot2 = savedAccessorySlot2;
+	}
 }

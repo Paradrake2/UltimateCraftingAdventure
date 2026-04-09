@@ -156,4 +156,20 @@ public class Ally : ScriptableObject
             RecalculateStats();
         }
     }
+
+    /// <summary>
+    /// Restores runtime progression fields from save data.
+    /// Called by SaveSystem — do not call from other code.
+    /// </summary>
+    public void RestoreProgress(float savedXp, int savedLevel, float savedXpToNextLevel, StatCollection savedStats)
+    {
+        xp            = savedXp;
+        level         = Mathf.Max(1, savedLevel);
+        xpToNextLevel = Mathf.Max(1f, savedXpToNextLevel);
+        if (savedStats != null)
+        {
+            stats = savedStats;
+            combatStats?.Initialize(stats);
+        }
+    }
 }

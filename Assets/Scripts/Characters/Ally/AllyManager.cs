@@ -39,6 +39,11 @@ public class AllyManager : MonoBehaviour
         Debug.Log("Populating equipment for ally: " + ally.name);
         EquipmentHolder.Instance.UI.PopulateSlots(ally.EquipmentInventory);
     }
+
+    public void RefreshEquipmentUI()
+    {
+        PopulateAllyEquipment(currentAlly);
+    }
     public void AddAlly(Ally ally)
     {
         if (ally == null) return;
@@ -58,6 +63,12 @@ public class AllyManager : MonoBehaviour
     public List<Ally> GetAllies()
     {
         return allies;
+    }
+
+    public void ClearAllies()
+    {
+        allies.Clear();
+        currentAlly = null;
     }
 
     void Start()

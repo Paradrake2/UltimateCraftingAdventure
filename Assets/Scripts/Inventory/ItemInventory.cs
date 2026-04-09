@@ -5,7 +5,8 @@ using UnityEngine;
 public class ItemInventory : ScriptableObject
 {
     [SerializeField] private List<ItemQuantity> ownedItems = new List<ItemQuantity>();
-    public IReadOnlyList<ItemQuantity> OwnedItems => ownedItems;
+    [System.NonSerialized] private List<ItemQuantity> runtimeItems;
+    public IReadOnlyList<ItemQuantity> OwnedItems => runtimeItems;
     private static ItemInventory instance;
     public static ItemInventory Instance
     {
@@ -22,33 +23,43 @@ public class ItemInventory : ScriptableObject
             return instance;
         }
     }
+    private void OnEnable()
+    {
+        runtimeItems = new List<ItemQuantity>(ownedItems ?? new List<ItemQuantity>());
+    }
+
     public void AddItem(Item item, int quantity)
     {
-        ItemQuantity existingItem = ownedItems.Find(i => i.Item == item);
+        ItemQuantity existingItem = runtimeItems.Find(i => i.Item == item);
         if (existingItem != null)
         {
             existingItem.AddQuantity(quantity);
         }
         else
         {
-            ownedItems.Add(new ItemQuantity(item, quantity));
+            runtimeItems.Add(new ItemQuantity(item, quantity));
         }
     }
     public void RemoveItem(Item item, int quantity)
     {
-        ItemQuantity existingItem = ownedItems.Find(i => i.Item == item);
+        ItemQuantity existingItem = runtimeItems.Find(i => i.Item == item);
         if (existingItem != null)
         {
             existingItem.RemoveQuantity(quantity);
             if (existingItem.Quantity <= 0)
             {
-                ownedItems.Remove(existingItem);
+                runtimeItems.Remove(existingItem);
             }
         }
     }
     public bool HasItem(Item item, int requiredQuantity)
     {
-        ItemQuantity existingItem = ownedItems.Find(i => i.Item == item);
+        ItemQuantity existingItem = runtimeItems.Find(i => i.Item == item);
         return existingItem != null && existingItem.HasEnoughQuantity(requiredQuantity);
+    }
+
+    public void Clear()
+    {
+        runtimeItems.Clear();
     }
 }

@@ -44,14 +44,4 @@ public class AllyCombatWindowUI : MonoBehaviour
             Destroy(child.gameObject);
         }
     }
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

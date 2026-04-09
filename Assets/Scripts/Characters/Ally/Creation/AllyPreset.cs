@@ -82,7 +82,7 @@ public class AllyPreset : ScriptableObject
             if (item == null) continue;
             if (item.EquipmentType == EquipmentType.Weapon) continue;
             if (item.EquipmentType == EquipmentType.Shield) continue;
-            ally.TryEquip(item, out _);
+            ally.TryEquip(item.CloneWithID(), out _);
         }
     }
 
@@ -93,7 +93,7 @@ public class AllyPreset : ScriptableObject
             var item = equipment[i];
             if (item == null) continue;
             if (item.EquipmentType != equipmentType) continue;
-            ally.TryEquip(item, out _);
+            ally.TryEquip(item.CloneWithID(), out _);
         }
     }
 }

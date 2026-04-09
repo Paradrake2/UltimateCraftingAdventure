@@ -14,7 +14,7 @@ public class EnemyCombatSlot : MonoBehaviour
         enemy = newEnemy;
         if (enemy != null)
         {
-            enemy.CombatStats.Initialize(enemy.Stats);
+            enemy.CombatStats.Initialize(enemy.Stats, enemy);
             icon.sprite = enemy.Icon;
             StartCoroutine(HealthBarCoroutine());
             StartCoroutine(AttackBarCoroutine());

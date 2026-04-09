@@ -16,14 +16,14 @@ public class Enemy : ScriptableObject
 	public EnemyLootTable LootTable => lootTable;
 
 
-	public void Initialize(string newEnemyName, Sprite newIcon, StatCollection newStats)
+	public void Initialize(string newEnemyName, Sprite newIcon, StatCollection newStats, EnemyLootTable table)
 	{
 		enemyName = newEnemyName;
 		icon = newIcon;
 		stats = newStats ?? new StatCollection();
-
+		lootTable = table;
 		combatStats ??= new EnemyCombat();
-		combatStats.Initialize(stats);
+		combatStats.Initialize(stats, this);
 	}
 
 	public static Enemy CreateRuntime(Enemy template)
@@ -35,18 +35,20 @@ public class Enemy : ScriptableObject
 
 		Enemy enemy = CreateInstance<Enemy>();
 		StatCollection runtimeStats = template.stats != null ? template.stats.Clone() : new StatCollection();
-		enemy.Initialize(template.EnemyName, template.icon, runtimeStats);
+		enemy.Initialize(template.EnemyName, template.icon, runtimeStats, template.lootTable);
 		return enemy;
 	}
 
 	public void RecalculateStats()
 	{
-		combatStats?.Initialize(stats);
+		combatStats?.Initialize(stats, this);
 	}
 	public void DropLoot()
 	{
+		Debug.Log($"{EnemyName} is dropping loot...");
 		if (lootTable != null)
 		{
+			Debug.Log("Rolling for loot drop...");
 			var loot = lootTable.GetLootDrop();
 			if (loot != null)
 			{
@@ -56,6 +58,7 @@ public class Enemy : ScriptableObject
 				}
 				else if (loot is Equipment equipment)
 				{
+					EquipmentInventory.Instance.AddEquipment(equipment);
 					Debug.Log($"Enemy dropped equipment: {equipment.EquipmentName}");
 				}
 				else

@@ -28,4 +28,9 @@ MonoBehaviour:
     statCollection:
       stats: []
     currentHealth: 0
+    currentBarrier: 0
     baseAttackSpeed: 1
+    attackTargeting: 0
+    maxTargets: 2
+    enemy: {fileID: 0}
+  lootTable: {fileID: 11400000, guid: bf708323648631141969056c11222b68, type: 2}

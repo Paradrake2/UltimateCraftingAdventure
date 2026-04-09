@@ -8,7 +8,7 @@ public class EquipmentSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] private Equipment equipment;
     [SerializeField] private Sprite sprite;
     [SerializeField] private Sprite baseSprite;
-    public void SetEquipment(Equipment equipment)
+    public void SetEquipment(Equipment equipment = null)
     {
         this.equipment = equipment;
         GetComponent<Image>().sprite = equipment != null ? equipment.Icon : baseSprite;

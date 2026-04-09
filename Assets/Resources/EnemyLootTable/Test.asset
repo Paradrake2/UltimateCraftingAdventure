@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 440ba99d3caa86c4b929c0b02c8cbaa0, type: 3}
+  m_Name: Test
+  m_EditorClassIdentifier: 
+  lootItems:
+  - item: {fileID: 11400000, guid: 779fd94601ef87d419bdb70865d80263, type: 2}
+    quantity: 1
+  lootEquipment:
+  - dropChance: 0.4
+    equipment: {fileID: 11400000, guid: 0da6ef90e1e85764491b668a9b7e26fa, type: 2}
+  - dropChance: 0.2
+    equipment: {fileID: 11400000, guid: 258c42c2c10c8ff43b00f1ed2a7fc5fc, type: 2}
+  - dropChance: 1
+    equipment: {fileID: 11400000, guid: d0af1b247ef221e43aa845ed0749725e, type: 2}

@@ -129,7 +129,7 @@ public static class AllyFactory
             if (item == null) continue;
             if (item.EquipmentType == EquipmentType.Weapon) continue;
             if (item.EquipmentType == EquipmentType.Shield) continue;
-            ally.TryEquip(item, out _);
+            ally.TryEquip(item.CloneWithID(), out _);
         }
     }
 
@@ -140,7 +140,7 @@ public static class AllyFactory
             var item = equipment[i];
             if (item == null) continue;
             if (item.EquipmentType != equipmentType) continue;
-            ally.TryEquip(item, out _);
+            ally.TryEquip(item.CloneWithID(), out _);
         }
     }
 

@@ -427,7 +427,15 @@ public class Combat : MonoBehaviour
 
     private void RemoveDefeatedEnemies()
     {
-        activeEnemies.RemoveAll(enemy => enemy == null || enemy.CombatStats == null || !enemy.CombatStats.IsAlive);
+        for (int i = activeEnemies.Count - 1; i >= 0; i--)
+        {
+            Enemy enemy = activeEnemies[i];
+            if (enemy == null || enemy.CombatStats == null || !enemy.CombatStats.IsAlive)
+            {
+                enemy?.DropLoot();
+                activeEnemies.RemoveAt(i);
+            }
+        }
     }
 
     private bool AllAlliesDefeated()

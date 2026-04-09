@@ -159,6 +159,18 @@ public class Equipment : ScriptableObject
     {
         id = System.Guid.NewGuid().ToString();
     }
+
+    /// <summary>
+    /// Returns a runtime ScriptableObject clone of this asset with a fresh ID.
+    /// Use this instead of equipping the raw asset directly so the instance
+    /// can be identified and saved independently.
+    /// </summary>
+    public Equipment CloneWithID()
+    {
+        var clone = Instantiate(this);
+        clone.GenerateID();
+        return clone;
+    }
     public void AddTag(EquipmentTag newTag)
     {
         if (newTag != null && !tags.Contains(newTag))
@@ -231,5 +243,45 @@ public class Equipment : ScriptableObject
     public void SetRarity(EquipmentRarity newRarity)
     {
         rarity = newRarity;
+    }
+
+    /// <summary>
+    /// Restores all core fields from save data on a freshly created instance.
+    /// Called by SaveSystem — do not call from other code.
+    /// </summary>
+    public void RestoreFromSave(
+        string savedId,
+        string savedName,
+        EquipmentType savedType,
+        EquipmentRarity savedRarity,
+        int savedLevel,
+        int savedReinforcementLevel,
+        EquipmentGenerationModifier savedGenerationModifier,
+        StatCollection savedBaseStats,
+        StatCollection savedStats,
+        Sprite savedIcon)
+    {
+        id                 = savedId;
+        equipmentName      = savedName;
+        equipmentType      = savedType;
+        rarity             = savedRarity;
+        level              = Mathf.Max(1, savedLevel);
+        reinforcementLevel = Mathf.Clamp(savedReinforcementLevel, 0, maxReinforcementLevel);
+        generationModifier = savedGenerationModifier;
+        baseStats          = savedBaseStats ?? new StatCollection();
+        stats              = savedStats ?? new StatCollection();
+        icon               = savedIcon;
+        tags               ??= new System.Collections.Generic.List<EquipmentTag>();
+        enchantments       ??= new System.Collections.Generic.List<EquipmentEnchantmentHolder>();
+        augments           ??= new System.Collections.Generic.List<EquipmentAugmentHolder>();
+    }
+
+    /// <summary>
+    /// Adds a pre-constructed holder directly (used by SaveSystem to preserve beenUsed state).
+    /// </summary>
+    public void AddEnchantmentHolder(EquipmentEnchantmentHolder holder)
+    {
+        enchantments ??= new System.Collections.Generic.List<EquipmentEnchantmentHolder>();
+        enchantments.Add(holder);
     }
 }

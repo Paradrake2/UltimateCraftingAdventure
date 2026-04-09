@@ -32,13 +32,13 @@ public class EquipmentHolderUI : MonoBehaviour
 
     private void PopulateSlot(GameObject slot, Equipment equipment)
     {
-        if (equipment!= null) slot.GetComponent<EquipmentSlotUI>().SetEquipment(equipment);
+        slot.GetComponent<EquipmentSlotUI>().SetEquipment(equipment);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        Debug.Log(Application.persistentDataPath);
     }
 
     // Update is called once per frame

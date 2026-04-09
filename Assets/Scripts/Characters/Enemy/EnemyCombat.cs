@@ -19,6 +19,7 @@ public class EnemyCombat
     [SerializeField] private float baseAttackSpeed = 1f;
     [SerializeField] private AttackTargeting attackTargeting = AttackTargeting.Single;
     [SerializeField] private int maxTargets = 2;
+    [SerializeField] private Enemy enemy;
 
     public StatCollection StatCollection => statCollection;
     public float BaseAttackSpeed => baseAttackSpeed;
@@ -36,9 +37,10 @@ public class EnemyCombat
     }
     public bool IsAlive => CurrentHealth > 0d;
 
-    public void Initialize(StatCollection newStats)
+    public void Initialize(StatCollection newStats, Enemy parentEnemy)
     {
         statCollection = newStats ?? new StatCollection();
+        enemy = parentEnemy;
     }
 
     public void ResetForCombat()
@@ -95,7 +97,7 @@ public class EnemyCombat
         return GetRandomLivingAlly(allies);
     }
 
-    public void TakeDamage(System.Collections.Generic.IReadOnlyList<DamageInstance> instances)
+    public void TakeDamage(IReadOnlyList<DamageInstance> instances)
     {
         if (instances == null || instances.Count == 0) return;
 
@@ -125,15 +127,21 @@ public class EnemyCombat
         if (damage <= 0) return;
 
         CurrentHealth -= damage;
-        if (CurrentHealth < 0d)
+        if (CurrentHealth <= 0d)
         {
-            CurrentHealth = 0d;
+            Die();
         }
     }
 
-    public System.Collections.Generic.List<DamageInstance> BuildAttackInstances()
+    public void Die()
     {
-        var instances = new System.Collections.Generic.List<DamageInstance>();
+        CurrentHealth = 0d;
+        CurrentBarrier = 0d;
+    }
+
+    public List<DamageInstance> BuildAttackInstances()
+    {
+        var instances = new List<DamageInstance>();
         if (statCollection == null) return instances;
 
         foreach (DamageType type in System.Enum.GetValues(typeof(DamageType)))
@@ -167,10 +175,6 @@ public class EnemyCombat
         ally.CombatStats.TakeDamage(BuildAttackInstances());
     }
 
-    /// <summary>
-    /// Attacks based on <see cref="AttackTargeting"/>.
-    /// Returns true if at least one target was attacked.
-    /// </summary>
     public bool AttackTargets(IReadOnlyList<Ally> allies)
     {
         if (!IsAlive || allies == null || allies.Count == 0) return false;
@@ -203,10 +207,10 @@ public class EnemyCombat
         return true;
     }
 
-    private bool AttackMultipleTargets(IReadOnlyList<Ally> allies, System.Collections.Generic.List<DamageInstance> instances)
+    private bool AttackMultipleTargets(IReadOnlyList<Ally> allies, List<DamageInstance> instances)
     {
         // Collect living targets into a temporary list
-        var pool = new System.Collections.Generic.List<Ally>(allies.Count);
+        var pool = new List<Ally>(allies.Count);
         for (int i = 0; i < allies.Count; i++)
         {
             Ally a = allies[i];

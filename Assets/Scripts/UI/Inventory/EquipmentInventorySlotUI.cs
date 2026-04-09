@@ -27,6 +27,9 @@ public class EquipmentInventorySlotUI : MonoBehaviour
     }
     public void OnClick()
     {
-        AllyManager.Instance.currentAlly.EquipmentInventory.TryEquip(equipment, out _);
+        if (AllyManager.Instance.currentAlly.EquipmentInventory.TryEquip(equipment, out _))
+        {
+            AllyManager.Instance.RefreshEquipmentUI();
+        }
     }
 }
