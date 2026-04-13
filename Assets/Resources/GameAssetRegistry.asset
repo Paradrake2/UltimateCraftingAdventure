@@ -54,3 +54,6 @@ MonoBehaviour:
   - {fileID: 0}
   augments: []
   archetypes: []
+  skills:
+  - {fileID: 11400000, guid: 1f63876db4d54714ba70a07ae8660456, type: 2}
+  - {fileID: 11400000, guid: c9e2a23b3b3885444a7e774b48ef4d19, type: 2}

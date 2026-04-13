@@ -105,13 +105,17 @@ public class EnemyCombat
         for (int i = 0; i < instances.Count; i++)
         {
             DamageInstance hit = instances[i];
-            string resistStat = hit.Type.ToString() + ResistanceSuffix;
+            string resistStat = hit.Attribute.HasValue
+                ? hit.Attribute.Value.ToString() + ResistanceSuffix
+                : hit.Type.ToString() + ResistanceSuffix;
             float resistance = statCollection != null
                 ? Mathf.Clamp(statCollection.GetStatValue(resistStat), 0f, 100f)
                 : 0f;
-            totalDamage += hit.Amount * (1f - resistance / 100f);
+            double dmgAdd = hit.Amount * (1f - resistance / 100f);
+            Debug.Log($"{enemy.name} took {dmgAdd} {(hit.Attribute.HasValue ? hit.Attribute.Value.ToString() : hit.Type.ToString())} damage after {resistance}% resistance.");
+            totalDamage += dmgAdd;
         }
-
+        Debug.Log($"{enemy.name} took {totalDamage} damage.");
         ApplyDamageToHealthPool(totalDamage);
     }
 

@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statName: MagicDamage
   statType: 0
+  baseValue: 1

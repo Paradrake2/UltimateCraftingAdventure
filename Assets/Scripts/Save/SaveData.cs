@@ -59,6 +59,7 @@ public class AllySaveData
     public int level;
     public float xpToNextLevel;
     public List<StatValueSaveData> stats = new List<StatValueSaveData>();
+    public List<string> skillNames = new List<string>();
     public AllyEquipmentSaveData equipmentInventory = new AllyEquipmentSaveData();
 }
 

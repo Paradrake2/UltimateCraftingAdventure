@@ -8,7 +8,7 @@ public class WarriorDefaultSlash : AllySkill
         Enemy target = context.Caster.CombatStats.GetAttackTarget(context.Enemies);
         if (target == null) return;
 
-        var instances = BuildDamageInstances(context.Caster.CombatStats.StatCollection);
+        var instances = BuildDamageInstances(context.Caster);
         if (instances.Count > 0)
             target.CombatStats.TakeDamage(instances);
     }

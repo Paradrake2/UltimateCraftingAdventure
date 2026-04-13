@@ -28,4 +28,10 @@ MonoBehaviour:
     statCollection:
       stats: []
     currentHealth: 0
+    currentBarrier: 0
     baseAttackSpeed: 1
+    attackTargeting: 0
+    maxTargets: 2
+    enemy: {fileID: 0}
+  lootTable: {fileID: 0}
+  XPReward: 100

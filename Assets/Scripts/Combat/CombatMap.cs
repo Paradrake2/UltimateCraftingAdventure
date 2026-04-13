@@ -15,7 +15,13 @@ public class CombatMap : ScriptableObject
     [SerializeField] private bool isLocked = true;
     [SerializeField] private List<CombatMap> prerequisiteMaps = new List<CombatMap>();
     [SerializeField] private List<CombatMap> mapsUnlockedOnCompletion = new List<CombatMap>();
+    [SerializeField] private XPDistributionMethod xpDistributionMethod = XPDistributionMethod.PerAllyLevel;
+    [SerializeField] private LootGenerationModifierChance[] lootGenerationModifierChances;
+    [SerializeField] private float luck = 0f;
+
     public string MapName => string.IsNullOrWhiteSpace(mapName) ? name : mapName;
+    public XPDistributionMethod XPDistribution => xpDistributionMethod;
+    public float Luck => luck;
     public IReadOnlyList<Enemy> PossibleEnemies => possibleEnemies;
     public Enemy BossEnemy => bossEnemy;
     public int MaxAlliesInBattle => Mathf.Max(1, maxAlliesInBattle);
@@ -26,6 +32,7 @@ public class CombatMap : ScriptableObject
     public bool IsLocked => isLocked;
     public IReadOnlyList<CombatMap> PrerequisiteMaps => prerequisiteMaps;
     public IReadOnlyList<CombatMap> MapsUnlockedOnCompletion => mapsUnlockedOnCompletion;
+    public IReadOnlyList<LootGenerationModifierChance> LootGenerationModifierChances => lootGenerationModifierChances;
     public Enemy GetRandomEnemyTemplate()
     {
         if (possibleEnemies == null || possibleEnemies.Count == 0)

@@ -40,6 +40,7 @@ public static class EquipmentFactory
         newEquipment.SetLevel(level);
         newEquipment.SetGenerationModifier(modifier);
         newEquipment.GenerateID();
+        newEquipment.SetRarity(rarity);
         GenerateStats(newEquipment, level, rarity);
         ApplyModifier(newEquipment, modifier);
         return newEquipment;
@@ -75,7 +76,7 @@ public static class EquipmentFactory
     }
     private static float LevelModifier(float value, int level)
     {
-        return value * (1 + (level - 1) * 0.05f);
+        return value * (1 + (level - 1) * 2f);
     }
     private static void ApplyModifier(Equipment equipment, EquipmentGenerationModifier modifier)
     {

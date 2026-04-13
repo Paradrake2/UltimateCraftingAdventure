@@ -40,7 +40,8 @@ public class AllyCombat
 
     public void Initialize(StatCollection newStats)
     {
-        statCollection = newStats ?? new StatCollection();
+        // Update in-place so any cached references to statCollection remain valid.
+        statCollection.OverwriteFrom(newStats ?? new StatCollection());
     }
 
     public void ResetForCombat()
@@ -131,7 +132,9 @@ public class AllyCombat
         for (int i = 0; i < instances.Count; i++)
         {
             DamageInstance hit = instances[i];
-            string resistStat = hit.Type.ToString() + ResistanceSuffix;
+            string resistStat = hit.Attribute.HasValue
+                ? hit.Attribute.Value.ToString() + ResistanceSuffix
+                : hit.Type.ToString() + ResistanceSuffix;
             float resistance = statCollection != null
                 ? Mathf.Clamp(statCollection.GetStatValue(resistStat), 0f, 100f)
                 : 0f;

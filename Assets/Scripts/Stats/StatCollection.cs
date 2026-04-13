@@ -89,4 +89,19 @@ public class StatCollection
         if (statValue == null || statValue.Stat == null) return;
         SetStat(statValue.Stat, statValue.Value);
     }
+
+    /// <summary>
+    /// Clears this collection and repopulates it from <paramref name="source"/> in-place,
+    /// preserving the object reference so cached pointers remain valid.
+    /// </summary>
+    public void OverwriteFrom(StatCollection source)
+    {
+        stats.Clear();
+        if (source == null) return;
+        foreach (var sv in source.stats)
+        {
+            if (sv?.Stat == null) continue;
+            stats.Add(new StatValue(sv.Stat, sv.Value));
+        }
+    }
 }

@@ -15,7 +15,6 @@ public class AllyCombatSlot : MonoBehaviour
         ally = newAlly;
         if (ally != null)
         {
-            ally.CombatStats.Initialize(ally.Stats);
             allyIcon.sprite = ally.Icon;
             StartCoroutine(HealthBarCoroutine());
             StartCoroutine(AttackBarCoroutine());

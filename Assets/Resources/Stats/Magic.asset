@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statName: Magic
   statType: 0
+  baseValue: 1

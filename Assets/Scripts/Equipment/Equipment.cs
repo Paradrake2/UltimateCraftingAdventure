@@ -60,6 +60,7 @@ public class Equipment : ScriptableObject
     [SerializeField] private StatCollection baseStats = new StatCollection(); // stats that this equipment will always have
     [SerializeField] private StatCollection stats = new StatCollection(); // random stats
     [SerializeField] private EquipmentType equipmentType;
+    [SerializeField] private DamageType weaponDamageType = DamageType.Physical;
     [SerializeField] private List<EquipmentTag> tags = new List<EquipmentTag>();
     [SerializeField] private EquipmentStatModifier statModifier = new EquipmentStatModifier();
     [SerializeField] private EquipmentRarity rarity;
@@ -78,6 +79,7 @@ public class Equipment : ScriptableObject
     public StatCollection BaseStats => baseStats;
     public StatCollection Stats => stats;
     public EquipmentType EquipmentType => equipmentType;
+    public DamageType WeaponDamageType => weaponDamageType;
     public IReadOnlyList<EquipmentTag> Tags => tags;
     public EquipmentRarity Rarity => rarity;
     public EquipmentStatModifier StatModifier => statModifier;

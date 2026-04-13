@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statName: WindDamage
   statType: 0
+  baseValue: 1

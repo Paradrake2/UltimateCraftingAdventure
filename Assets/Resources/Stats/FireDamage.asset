@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statName: FireDamage
   statType: 0
+  baseValue: 1

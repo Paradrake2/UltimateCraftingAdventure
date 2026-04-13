@@ -28,7 +28,6 @@ public class AllyManager : MonoBehaviour
     public void SwitchAlly(Ally newAlly)
     {
         currentAlly = newAlly;
-        currentAlly?.CombatStats?.Initialize(currentAlly.Stats);
         Debug.Log("Switched to ally: " + (currentAlly != null ? currentAlly.name : "None"));
         // load equipment, skills, stats, etc
         PopulateAllyEquipment(currentAlly);

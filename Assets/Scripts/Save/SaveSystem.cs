@@ -77,6 +77,30 @@ public static class SaveSystem
 
         // Equipment must be loaded first so ally slots can reference it by ID.
         var equipmentById = new Dictionary<string, Equipment>();
+
+        // Collect all IDs that are equipped on an ally so we don't also add
+        // them to the unequipped inventory pool — that would cause duplicates
+        // when the player unequips an item.
+        var equippedOnAllyIds = new HashSet<string>();
+        if (data.allies != null)
+        {
+            foreach (var ad in data.allies)
+            {
+                var s = ad?.equipmentInventory;
+                if (s == null) continue;
+                AddIfNotEmpty(equippedOnAllyIds, s.helmetId);
+                AddIfNotEmpty(equippedOnAllyIds, s.chestplateId);
+                AddIfNotEmpty(equippedOnAllyIds, s.leggingsId);
+                AddIfNotEmpty(equippedOnAllyIds, s.bootsId);
+                AddIfNotEmpty(equippedOnAllyIds, s.glovesId);
+                AddIfNotEmpty(equippedOnAllyIds, s.bracersId);
+                AddIfNotEmpty(equippedOnAllyIds, s.handSlot1Id);
+                AddIfNotEmpty(equippedOnAllyIds, s.handSlot2Id);
+                AddIfNotEmpty(equippedOnAllyIds, s.accessorySlot1Id);
+                AddIfNotEmpty(equippedOnAllyIds, s.accessorySlot2Id);
+            }
+        }
+
         var equipInv = EquipmentInventory.Instance;
         if (equipInv != null)
         {
@@ -85,9 +109,11 @@ public static class SaveSystem
             {
                 var e = EquipmentFromSaveData(ed);
                 if (e == null) continue;
-                equipInv.AddEquipment(e);
                 if (!string.IsNullOrEmpty(ed.id))
                     equipmentById[ed.id] = e;
+                // Only add to the unequipped pool if no ally is wearing it.
+                if (!equippedOnAllyIds.Contains(ed.id))
+                    equipInv.AddEquipment(e);
             }
         }
 
@@ -246,6 +272,11 @@ public static class SaveSystem
                 if (sv?.Stat != null)
                     data.stats.Add(new StatValueSaveData { statName = sv.Stat.StatName, value = sv.Value });
 
+        if (ally.CombatStats?.SkillSlots != null)
+            foreach (var slot in ally.CombatStats.SkillSlots)
+                if (slot?.Skill != null)
+                    data.skillNames.Add(slot.Skill.name);
+
         var inv = ally.EquipmentInventory;
         if (inv != null)
             data.equipmentInventory = new AllyEquipmentSaveData
@@ -274,6 +305,23 @@ public static class SaveSystem
 
         var ally = Ally.CreateRuntime(data.allyName, archetype, icon, stats);
         ally.RestoreProgress(data.xp, data.level, data.xpToNextLevel, stats);
+
+        if (data.skillNames != null && data.skillNames.Count > 0)
+        {
+            var resolvedSkills = new List<AllySkill>();
+            foreach (var skillName in data.skillNames)
+            {
+                var skill = registry?.FindSkill(skillName);
+                if (skill != null)
+                    resolvedSkills.Add(skill);
+                else
+                    Debug.LogWarning($"[SaveSystem] Skill not found in registry: '{skillName}'. Add it to GameAssetRegistry.");
+            }
+            // Only override if we actually resolved at least one skill.
+            // Leaving it alone preserves the archetype defaults set by CreateRuntime.
+            if (resolvedSkills.Count > 0)
+                ally.CombatStats?.SetSkills(resolvedSkills);
+        }
 
         if (data.equipmentInventory != null)
         {
@@ -319,5 +367,10 @@ public static class SaveSystem
         if (string.IsNullOrEmpty(id)) return null;
         map.TryGetValue(id, out var e);
         return e;
+    }
+
+    private static void AddIfNotEmpty(HashSet<string> set, string value)
+    {
+        if (!string.IsNullOrEmpty(value)) set.Add(value);
     }
 }

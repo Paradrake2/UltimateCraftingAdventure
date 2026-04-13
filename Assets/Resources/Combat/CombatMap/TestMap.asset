@@ -25,3 +25,18 @@ MonoBehaviour:
   prerequisiteMaps: []
   mapsUnlockedOnCompletion:
   - {fileID: 11400000, guid: 6e07732c9130c844a98a9f09dad6fdc4, type: 2}
+  xpDistributionMethod: 0
+  lootGenerationModifierChances:
+  - EquipmentGenerationModifier: 0
+    Chance: 0.75
+  - EquipmentGenerationModifier: 1
+    Chance: 0.05
+  - EquipmentGenerationModifier: 2
+    Chance: 0.05
+  - EquipmentGenerationModifier: 3
+    Chance: 0.05
+  - EquipmentGenerationModifier: 4
+    Chance: 0.05
+  - EquipmentGenerationModifier: 5
+    Chance: 0.05
+  luck: 95

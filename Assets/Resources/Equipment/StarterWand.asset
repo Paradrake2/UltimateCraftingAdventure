@@ -14,13 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   equipmentName: StarterWand
   icon: {fileID: 2602289581836835513, guid: fbdb2823e76b40640b9139303b48ec15, type: 3}
+  baseStats:
+    stats:
+    - stat: {fileID: 11400000, guid: 41da006ae985cb34aa28ebd734490e52, type: 2}
+      value: 10
   stats:
     stats:
-    - stat: {fileID: 11400000, guid: ea72a39cd1f488a4da182982e8b21701, type: 2}
-      value: 1
-    - stat: {fileID: 11400000, guid: 30d55cc49b243fc4ebb358d952dca8cb, type: 2}
-      value: 1
+    - stat: {fileID: 11400000, guid: 41da006ae985cb34aa28ebd734490e52, type: 2}
+      value: 10
   equipmentType: 0
+  weaponDamageType: 2
   tags:
   - {fileID: 11400000, guid: 9395b1a8623a60a4da92d4424b7e2c78, type: 2}
   statModifier:
@@ -28,3 +31,11 @@ MonoBehaviour:
   rarity: 0
   tag: {fileID: 11400000, guid: 9395b1a8623a60a4da92d4424b7e2c78, type: 2}
   id: 
+  enchantments: []
+  augments: []
+  reinforcementLevel: 0
+  maxReinforcementLevel: 5
+  refundItems: []
+  maxRefundItems: 5
+  level: 1
+  generationModifier: 0

@@ -23,6 +23,9 @@ public class Combat : MonoBehaviour
     private readonly List<Ally> livingAlliesBuffer = new List<Ally>();
     private readonly List<Coroutine> enemyAttackRoutines = new List<Coroutine>();
     private readonly List<Coroutine> allySkillRoutines = new List<Coroutine>();
+    private float currentLuck;
+
+    public float CurrentLuck => currentLuck;
 
     public CombatMap Map => map;
     public Ally[] Allies => allies;
@@ -98,6 +101,7 @@ public class Combat : MonoBehaviour
         bossWaveActive = false;
         encounterCompleted = false;
         activeEnemies.Clear();
+        currentLuck = map != null ? map.Luck : 0f;
 
         InitializeAlliesForCombat();
         isCombatActive = true;
@@ -134,7 +138,18 @@ public class Combat : MonoBehaviour
     {
         allies = newAllies;
     }
-
+    private int GetMaxAllyLevel()
+    {
+        int maxLevel = 1;
+        foreach (var ally in allies)
+        {
+            if (ally != null && ally.Level > maxLevel)
+            {
+                maxLevel = ally.Level;
+            }
+        }
+        return maxLevel;
+    }
     private bool CanStartCombat()
     {
         if (map == null)
@@ -173,7 +188,7 @@ public class Combat : MonoBehaviour
                 continue;
             }
 
-            ally.CombatStats.Initialize(ally.Stats);
+            ally.RecalculateStats();
             ally.CombatStats.ResetForCombat();
         }
         allyCombatWindowUI.PopulateAllyCombatInfo(allies);
@@ -272,6 +287,9 @@ public class Combat : MonoBehaviour
         {
             return;
         }
+
+        if (currentLuck != map.Luck)
+            Debug.Log($"[Combat] Luck changed from {map.Luck} to {currentLuck} on map clear.");
 
         foreach (var unlockedMap in map.MapsUnlockedOnCompletion)
         {
@@ -432,7 +450,8 @@ public class Combat : MonoBehaviour
             Enemy enemy = activeEnemies[i];
             if (enemy == null || enemy.CombatStats == null || !enemy.CombatStats.IsAlive)
             {
-                enemy?.DropLoot();
+                enemy?.DropLoot(currentLuck, map, GetMaxAllyLevel());
+                enemy?.AddXPToAllies(allies, GetMaxAllyLevel(), map.XPDistribution);
                 activeEnemies.RemoveAt(i);
             }
         }

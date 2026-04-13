@@ -16,6 +16,7 @@ public class GameAssetRegistry : ScriptableObject
     [SerializeField] private List<Enchantment> enchantments = new List<Enchantment>();
     [SerializeField] private List<Augment> augments = new List<Augment>();
     [SerializeField] private List<AllyArchetype> archetypes = new List<AllyArchetype>();
+    [SerializeField] private List<AllySkill> skills = new List<AllySkill>();
 
     [System.NonSerialized] private Dictionary<string, Sprite> _spriteCache;
 
@@ -52,6 +53,9 @@ public class GameAssetRegistry : ScriptableObject
 
     public AllyArchetype FindArchetype(string archetypeName) =>
         archetypes?.Find(a => a != null && a.name == archetypeName);
+
+    public AllySkill FindSkill(string skillName) =>
+        skills?.Find(s => s != null && s.name == skillName);
 
     public Sprite FindSprite(string spriteName)
     {

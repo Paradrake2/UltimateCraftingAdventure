@@ -35,6 +35,11 @@ public class Ally : ScriptableObject
         combatStats ??= new AllyCombat();
         combatStats.Initialize(stats);
 
+        level = 1;
+        xp = 0f;
+        xpToNextLevel = 100f;
+        xpGrowthRate = 1.1f;
+
         // Apply archetype default skills if none are set yet (safety net for any creation path)
         if (archetype != null && combatStats.SkillSlots.Count == 0 && archetype.DefaultSkills != null && archetype.DefaultSkills.Count > 0)
             combatStats.SetSkills(archetype.DefaultSkills);
@@ -73,7 +78,9 @@ public class Ally : ScriptableObject
             return false;
         }
 
-        return equipmentInventory.TryEquip(equipment, out failureReason);
+        bool success = equipmentInventory.TryEquip(equipment, out failureReason);
+        if (success) RecalculateStats();
+        return success;
     }
 
     public bool TryUnequip(Equipment equipment, out string failureReason)
@@ -137,7 +144,21 @@ public class Ally : ScriptableObject
 
     public void RecalculateStats()
     {
-        combatStats?.Initialize(stats);
+        StatCollection merged = stats.Clone();
+
+        if (equipmentInventory != null)
+        {
+            foreach (Equipment equipment in equipmentInventory.GetAllEquipped())
+            {
+                if (equipment == null) continue;
+                foreach (var sv in equipment.BaseStats.Stats)
+                    if (sv?.Stat != null) merged.AddStatValue(sv.Stat, sv.Value);
+                foreach (var sv in equipment.Stats.Stats)
+                    if (sv?.Stat != null) merged.AddStatValue(sv.Stat, sv.Value);
+            }
+        }
+
+        combatStats?.Initialize(merged);
     }
     public void AddXP(float amount)
     {
@@ -152,9 +173,9 @@ public class Ally : ScriptableObject
         {
             xp -= xpToNextLevel;
             level++;
-            xpToNextLevel *= xpGrowthRate;
-            RecalculateStats();
+            xpToNextLevel = Mathf.Max(1f, xpToNextLevel * Mathf.Max(0.01f, xpGrowthRate));
         }
+        RecalculateStats();
     }
 
     /// <summary>

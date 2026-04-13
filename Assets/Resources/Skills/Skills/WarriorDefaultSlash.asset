@@ -17,6 +17,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ae65902303cfc3746a5008fd4e73a359, type: 2}
   - {fileID: 11400000, guid: b8e85b6867a408f4482811c84d4caf8b, type: 2}
   scalesWithAttackSpeed: 1
-  damageEntries:
-  - damageType: 0
-    multiplier: 1
+  damageEntries: []

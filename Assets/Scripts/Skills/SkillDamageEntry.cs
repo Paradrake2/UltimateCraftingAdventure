@@ -1,22 +1,27 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// One damage component of a skill. The final damage dealt is:
-/// <c>casterBaseDamage * multiplier</c>
-/// where <c>casterBaseDamage</c> is the sum of the caster's relevant stat and its multiplier stat.
+/// Defines how a skill deals damage.
+/// The delivery type (Physical/Ranged/Magic/Poison) is inherited from the caster's equipped weapons.
+/// Elemental attributes add bonus instances on top of the delivery damage.
+///
+/// Formula:
+///   baseDamage        = sum of weapon "[DeliveryType]Damage" stats
+///   deliveryDamage    = baseDamage * (1 + stat["[DeliveryType]DamageMultiplier"] / 100) * Multiplier
+///   per attribute     = baseDamage * (stat["[Attr]DamageMultiplier"] / 100)  →  one DamageInstance each
 /// </summary>
 [Serializable]
 public class SkillDamageEntry
 {
-    [Tooltip("The damage type this entry deals (e.g. Fire, Cold, Physical).")]
-    [SerializeField] private DamageType damageType;
-
-    [Tooltip("Multiplier applied to the caster's base damage stat for this type. " +
-             "1.0 = 100% of the caster's relevant damage stat. " +
-             "Use values < 1 for weaker hits, > 1 for stronger hits.")]
+    [Tooltip("Multiplier applied to base weapon damage. 1.0 = 100% of weapon damage, 0.5 = 50%, 1.5 = 150%.")]
     [SerializeField] private float multiplier = 1f;
 
-    public DamageType DamageType => damageType;
+    [Tooltip("Elemental attributes this skill carries. Each attribute adds bonus damage equal to " +
+             "baseDamage * (stat[AttributeDamageMultiplier] / 100).")]
+    [SerializeField] private List<DamageAttribute> attributes = new List<DamageAttribute>();
+
     public float Multiplier => multiplier;
+    public IReadOnlyList<DamageAttribute> Attributes => attributes;
 }

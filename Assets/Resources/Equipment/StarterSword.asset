@@ -14,11 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   equipmentName: StarterSword
   icon: {fileID: 8202703598068382869, guid: 8e4f6440d60ad27468055cb2ce3ff637, type: 3}
+  baseStats:
+    stats:
+    - stat: {fileID: 11400000, guid: 8963c19a480aee44f892b8ae806950ed, type: 2}
+      value: 10
   stats:
     stats:
-    - stat: {fileID: 11400000, guid: 30d55cc49b243fc4ebb358d952dca8cb, type: 2}
-      value: 2
+    - stat: {fileID: 11400000, guid: 8963c19a480aee44f892b8ae806950ed, type: 2}
+      value: 10
   equipmentType: 0
+  weaponDamageType: 0
   tags:
   - {fileID: 11400000, guid: d7b2dd670b90e6041932fb2c32106cb0, type: 2}
   statModifier:
@@ -26,3 +31,11 @@ MonoBehaviour:
   rarity: 0
   tag: {fileID: 11400000, guid: d7b2dd670b90e6041932fb2c32106cb0, type: 2}
   id: 
+  enchantments: []
+  augments: []
+  reinforcementLevel: 0
+  maxReinforcementLevel: 5
+  refundItems: []
+  maxRefundItems: 5
+  level: 1
+  generationModifier: 0

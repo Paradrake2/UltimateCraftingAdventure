@@ -15,7 +15,11 @@ MonoBehaviour:
   equipmentName: Drop
   icon: {fileID: 9093141125120805253, guid: 0cf6705882e8c604c9470010538b692b, type: 3}
   baseStats:
-    stats: []
+    stats:
+    - stat: {fileID: 11400000, guid: 814799a10b9c9d54ab68ec3abd5748ec, type: 2}
+      value: 1
+    - stat: {fileID: 11400000, guid: b21d313242f64c74f8e991adc404818c, type: 2}
+      value: 1
   stats:
     stats:
     - stat: {fileID: 11400000, guid: 044072aab872c4a4481055ac7d4263c9, type: 2}
