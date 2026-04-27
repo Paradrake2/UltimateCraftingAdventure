@@ -86,9 +86,5 @@ public class EquipmentCrafter : MonoBehaviour
             Debug.LogError("EquipmentInventory not assigned. Please assign the EquipmentInventory asset in the Inspector.");
         }
     }
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }

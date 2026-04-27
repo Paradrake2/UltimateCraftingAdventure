@@ -176,7 +176,7 @@ public class EnemyCombat
             return;
         }
 
-        ally.CombatStats.TakeDamage(BuildAttackInstances());
+        ally.ReceiveAttack(BuildAttackInstances(), enemy);
     }
 
     public bool AttackTargets(IReadOnlyList<Ally> allies)
@@ -193,7 +193,7 @@ public class EnemyCombat
                 Ally a = allies[i];
                 if (a != null && a.CombatStats != null && a.CombatStats.IsAlive)
                 {
-                    a.CombatStats.TakeDamage(instances);
+                    a.ReceiveAttack(instances, enemy);
                     attacked = true;
                 }
             }
@@ -208,6 +208,7 @@ public class EnemyCombat
         Ally target = GetAttackTarget(allies);
         if (target == null) return false;
         Attack(target);
+        // check for target runes that might trigger on being attacked, if so, apply their effects
         return true;
     }
 
@@ -232,7 +233,7 @@ public class EnemyCombat
             Ally chosen = pool[randomIndex];
             pool[randomIndex] = pool[i];
             pool[i] = chosen;
-            chosen.CombatStats.TakeDamage(instances);
+            chosen.ReceiveAttack(instances, enemy);
         }
         return true;
     }

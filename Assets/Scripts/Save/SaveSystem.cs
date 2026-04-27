@@ -293,6 +293,18 @@ public static class SaveSystem
                 accessorySlot2Id = inv.AccessorySlot2?.ID,
             };
 
+        var runeInv = ally.RuneInventory;
+        if (runeInv != null)
+        {
+            var slots = runeInv.Slots;
+            data.runeInventory = new AllyRuneSaveData
+            {
+                slot0 = RuneSlotToSaveData(slots[0]),
+                slot1 = RuneSlotToSaveData(slots[1]),
+                slot2 = RuneSlotToSaveData(slots[2]),
+            };
+        }
+
         return data;
     }
 
@@ -340,6 +352,27 @@ public static class SaveSystem
             );
         }
 
+        if (data.runeInventory != null)
+        {
+            var runeRegistry = GameAssetRegistry.Instance;
+            var rs = data.runeInventory;
+            var slotData = new[] { rs.slot0, rs.slot1, rs.slot2 };
+            var unlocked = new bool[AllyRuneInventory.SlotCount];
+            var runes    = new Rune[AllyRuneInventory.SlotCount];
+            for (int i = 0; i < AllyRuneInventory.SlotCount; i++)
+            {
+                if (slotData[i] == null) continue;
+                unlocked[i] = slotData[i].isUnlocked;
+                if (!string.IsNullOrEmpty(slotData[i].runeName))
+                {
+                    runes[i] = runeRegistry?.FindRune(slotData[i].runeName);
+                    if (runes[i] == null)
+                        Debug.LogWarning($"[SaveSystem] Rune not found in registry: '{slotData[i].runeName}'. Add it to GameAssetRegistry.");
+                }
+            }
+            ally.RuneInventory.RestoreSlots(unlocked, runes);
+        }
+
         return ally;
     }
 
@@ -372,5 +405,15 @@ public static class SaveSystem
     private static void AddIfNotEmpty(HashSet<string> set, string value)
     {
         if (!string.IsNullOrEmpty(value)) set.Add(value);
+    }
+
+    private static AllyRuneSlotSaveData RuneSlotToSaveData(AllyRuneInventory.RuneSlot slot)
+    {
+        if (slot == null) return new AllyRuneSlotSaveData();
+        return new AllyRuneSlotSaveData
+        {
+            isUnlocked = slot.IsUnlocked,
+            runeName   = slot.Rune != null ? slot.Rune.name : string.Empty,
+        };
     }
 }

@@ -61,6 +61,22 @@ public class AllySaveData
     public List<StatValueSaveData> stats = new List<StatValueSaveData>();
     public List<string> skillNames = new List<string>();
     public AllyEquipmentSaveData equipmentInventory = new AllyEquipmentSaveData();
+    public AllyRuneSaveData runeInventory = new AllyRuneSaveData();
+}
+
+[Serializable]
+public class AllyRuneSlotSaveData
+{
+    public bool isUnlocked;
+    public string runeName; // ScriptableObject asset name; empty means no rune equipped
+}
+
+[Serializable]
+public class AllyRuneSaveData
+{
+    public AllyRuneSlotSaveData slot0 = new AllyRuneSlotSaveData();
+    public AllyRuneSlotSaveData slot1 = new AllyRuneSlotSaveData();
+    public AllyRuneSlotSaveData slot2 = new AllyRuneSlotSaveData();
 }
 
 [Serializable]

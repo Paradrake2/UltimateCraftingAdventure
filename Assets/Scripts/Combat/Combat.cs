@@ -105,18 +105,22 @@ public class Combat : MonoBehaviour
 
         InitializeAlliesForCombat();
         isCombatActive = true;
+        GameEventManager.FireCombatStarted(new CombatStartedArgs(allies));
         StartAllySkillLoops();
         SpawnNextWave();
     }
 
     public void EndCombat()
     {
+        ExitCombatForAllAllies();
         isCombatActive = false;
         StopAttackLoops(enemyAttackRoutines);
         StopAttackLoops(allySkillRoutines);
     }
     public void ForceEndCombat()
     {
+        ExitCombatForAllAllies();
+        GameEventManager.FireCombatEnded(new CombatEndedArgs(alliesWon: false));
         isCombatActive = false;
         StopAttackLoops(enemyAttackRoutines);
         StopAttackLoops(allySkillRoutines);
@@ -190,6 +194,7 @@ public class Combat : MonoBehaviour
 
             ally.RecalculateStats();
             ally.CombatStats.ResetForCombat();
+            ally.EnterCombat();
         }
         allyCombatWindowUI.PopulateAllyCombatInfo(allies);
     }
@@ -271,6 +276,11 @@ public class Combat : MonoBehaviour
 
     private void HandleWaveCleared()
     {
+        FillLivingAlliesBuffer();
+        GameEventManager.FireWaveCleared(new WaveClearedArgs(currentWaveNumber, bossWaveActive));
+        for (int i = 0; i < livingAlliesBuffer.Count; i++)
+            livingAlliesBuffer[i].RuneInventory?.TriggerUtilityOnWaveCleared(livingAlliesBuffer[i]);
+
         if (bossWaveActive)
         {
             encounterCompleted = true;
@@ -445,6 +455,7 @@ public class Combat : MonoBehaviour
 
     private void RemoveDefeatedEnemies()
     {
+        FillLivingAlliesBuffer();
         for (int i = activeEnemies.Count - 1; i >= 0; i--)
         {
             Enemy enemy = activeEnemies[i];
@@ -453,6 +464,12 @@ public class Combat : MonoBehaviour
                 enemy?.DropLoot(currentLuck, map, GetMaxAllyLevel());
                 enemy?.AddXPToAllies(allies, GetMaxAllyLevel(), map.XPDistribution);
                 activeEnemies.RemoveAt(i);
+                if (enemy != null)
+                {
+                    GameEventManager.FireEnemyDied(new EnemyDiedArgs(enemy));
+                    for (int j = 0; j < livingAlliesBuffer.Count; j++)
+                        livingAlliesBuffer[j].RuneInventory?.TriggerUtilityOnEnemyDied(livingAlliesBuffer[j], enemy);
+                }
             }
         }
     }
@@ -492,6 +509,13 @@ public class Combat : MonoBehaviour
         }
 
         return false;
+    }
+
+    private void ExitCombatForAllAllies()
+    {
+        if (allies == null) return;
+        for (int i = 0; i < allies.Length; i++)
+            allies[i]?.ExitCombat();
     }
 
     private void RefreshAlliesFromManager()

@@ -19,4 +19,13 @@ public readonly struct DamageInstance
         Attribute = attribute;
         Amount = amount;
     }
+
+    /// <summary>
+    /// Returns a copy of this instance with <paramref name="newAmount"/> as
+    /// the damage value, preserving the original type and attribute.
+    /// </summary>
+    public DamageInstance WithAmount(double newAmount) =>
+        Attribute.HasValue
+            ? new DamageInstance(Attribute.Value, newAmount)
+            : new DamageInstance(Type, newAmount);
 }
