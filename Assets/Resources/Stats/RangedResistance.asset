@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: RangedResistance
   m_EditorClassIdentifier: 
   statName: RangedResistance
-  statType: 0
+  statType: 2
   baseValue: 1
+  icon: {fileID: 0}
+  displayOrder: 7

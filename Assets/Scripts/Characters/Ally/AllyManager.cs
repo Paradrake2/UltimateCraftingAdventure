@@ -15,13 +15,13 @@ public class AllyManager : MonoBehaviour
     {
         if (_instance != null && _instance != this)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
         else
         {
             _instance = this;
         }
-        DontDestroyOnLoad(this.gameObject);
+        DontDestroyOnLoad(gameObject);
         combatParty ??= new CombatParty();
     }
 
@@ -31,6 +31,7 @@ public class AllyManager : MonoBehaviour
         Debug.Log("Switched to ally: " + (currentAlly != null ? currentAlly.name : "None"));
         // load equipment, skills, stats, etc
         PopulateAllyEquipment(currentAlly);
+        GameEventManager.FireAllyInspected(currentAlly);
     }
     private void PopulateAllyEquipment(Ally ally)
     {

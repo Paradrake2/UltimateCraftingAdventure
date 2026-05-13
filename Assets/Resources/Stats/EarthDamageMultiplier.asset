@@ -15,3 +15,5 @@ MonoBehaviour:
   statName: EarthDamageMultiplier
   statType: 0
   baseValue: 1
+  icon: {fileID: 0}
+  displayOrder: 6

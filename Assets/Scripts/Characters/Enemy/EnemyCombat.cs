@@ -21,10 +21,13 @@ public class EnemyCombat
     [SerializeField] private int maxTargets = 2;
     [SerializeField] private Enemy enemy;
 
+    private StatusEffectManager _statusEffects;
+
     public StatCollection StatCollection => statCollection;
     public float BaseAttackSpeed => baseAttackSpeed;
     public AttackTargeting AttackTargeting => attackTargeting;
     public int MaxTargets => maxTargets;
+    public StatusEffectManager StatusEffects => _statusEffects;
     public double CurrentHealth
     {
         get => currentHealth;
@@ -47,6 +50,22 @@ public class EnemyCombat
     {
         CurrentHealth = GetMaxHealth();
         CurrentBarrier = GetMaxBarrier();
+        _statusEffects = new StatusEffectManager(enemy, statCollection);
+    }
+
+    /// <summary>
+    /// Ticks all active status effects. Call this once per combat frame.
+    /// </summary>
+    public void TickStatusEffects(float deltaTime)
+    {
+        _statusEffects?.Tick(deltaTime);
+    }
+
+    /// <summary>Restores <paramref name="amount"/> health, clamped to max health.</summary>
+    public void Heal(double amount)
+    {
+        if (!IsAlive || amount <= 0d) return;
+        CurrentHealth = System.Math.Min(CurrentHealth + amount, GetMaxHealth());
     }
 
     public float GetAttackInterval()
@@ -92,6 +111,13 @@ public class EnemyCombat
         if (!IsAlive || allies == null || allies.Count == 0)
         {
             return null;
+        }
+
+        // Honour any active taunt: force-attack the taunting ally if it is still alive.
+        if (_statusEffects?.ForcedAttackTarget is Ally taunter
+            && taunter.CombatStats != null && taunter.CombatStats.IsAlive)
+        {
+            return taunter;
         }
 
         return GetRandomLivingAlly(allies);

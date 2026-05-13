@@ -230,7 +230,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00003055091}
+  m_AnchoredPosition: {x: 0, y: 0.0005365345}
   m_SizeDelta: {x: -2.7979, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &261245058
@@ -1922,7 +1922,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 635005154}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.9999971
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2662,6 +2662,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1843768105}
   - component: {fileID: 1843768104}
+  - component: {fileID: 1843768106}
   m_Layer: 0
   m_Name: CombatObject
   m_TagString: Untagged
@@ -2709,6 +2710,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1843768106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843768103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15903b4313728114f9eab3cdb1290e82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  combat: {fileID: 1843768104}
 --- !u!1 &1850631880
 GameObject:
   m_ObjectHideFlags: 0

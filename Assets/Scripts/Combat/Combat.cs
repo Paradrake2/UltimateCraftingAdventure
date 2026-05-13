@@ -340,6 +340,8 @@ public class Combat : MonoBehaviour
 
             yield return wait;
 
+            ally.CombatStats.TickStatusEffects(tickInterval); // ticks status effects
+
             if (!isCombatActive || ally.CombatStats == null || !ally.CombatStats.IsAlive)
             {
                 yield break;
@@ -385,7 +387,7 @@ public class Combat : MonoBehaviour
             }
 
             yield return new WaitForSeconds(enemy.CombatStats.GetAttackInterval());
-
+            float interval = enemy.CombatStats.GetAttackInterval();
             if (!isCombatActive || enemy.CombatStats == null || !enemy.CombatStats.IsAlive)
             {
                 yield break;
@@ -396,6 +398,7 @@ public class Combat : MonoBehaviour
             {
                 continue;
             }
+            enemy.CombatStats.TickStatusEffects(interval);
 
             ResolveCombatState();
         }

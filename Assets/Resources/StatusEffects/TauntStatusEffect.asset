@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27fa8605ddf7110458b8d0bd71541e89, type: 3}
-  m_Name: FireDamage
+  m_Script: {fileID: 11500000, guid: 869b18f49375a3d4e896cc0caf712252, type: 3}
+  m_Name: TauntStatusEffect
   m_EditorClassIdentifier: 
-  statName: FireDamage
-  statType: 0
-  baseValue: 1
+  effectName: Taunt
+  icon: {fileID: 7275473611770971292, guid: 43232377d06cdec41bce5079ddda0e49, type: 3}
+  resistanceStat: 

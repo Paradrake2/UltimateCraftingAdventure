@@ -37,6 +37,13 @@ public readonly struct WaveClearedArgs
     public WaveClearedArgs(int waveNumber, bool wasBossWave) { WaveNumber = waveNumber; WasBossWave = wasBossWave; }
 }
 
+public readonly struct AllyInspectedArgs
+{
+    /// <summary>The ally now being viewed. Null means no ally is selected.</summary>
+    public readonly Ally Ally;
+    public AllyInspectedArgs(Ally ally) => Ally = ally;
+}
+
 // ─── Manager ──────────────────────────────────────────────────────────────────
 
 /// <summary>
@@ -70,6 +77,8 @@ public class GameEventManager : MonoBehaviour
     public static event Action<AllyDiedArgs>       OnAllyDied;
     public static event Action<EnemyDiedArgs>      OnEnemyDied;
     public static event Action<WaveClearedArgs>    OnWaveCleared;
+    /// <summary>Fired whenever the inspected ally changes or their stats may have changed (equip, unequip, level-up, etc.).</summary>
+    public static event Action<AllyInspectedArgs>  OnAllyInspected;
 
     // ─── Fire helpers (called internally by the combat system) ───────────────
 
@@ -78,4 +87,5 @@ public class GameEventManager : MonoBehaviour
     internal static void FireAllyDied(AllyDiedArgs args)           => OnAllyDied?.Invoke(args);
     internal static void FireEnemyDied(EnemyDiedArgs args)         => OnEnemyDied?.Invoke(args);
     internal static void FireWaveCleared(WaveClearedArgs args)     => OnWaveCleared?.Invoke(args);
+    public static void FireAllyInspected(Ally ally)                => OnAllyInspected?.Invoke(new AllyInspectedArgs(ally));
 }

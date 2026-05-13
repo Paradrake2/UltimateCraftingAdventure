@@ -10,9 +10,29 @@ public enum EquipmentGenerationModifier
     Cursed,
     Blessed
 }
-
-public class EquipmentStatGenerationNumber
+public interface IEquipmentRarityCalculator
 {
+    int GetNumberOfStats(EquipmentRarity rarity);
+    float GetModifier(EquipmentRarity rarity);
+}
+public class EquipmentStatGeneration : IEquipmentRarityCalculator
+{
+    public float GetModifier(EquipmentRarity rarity)
+    {
+        switch (rarity)
+        {
+            case EquipmentRarity.Common: return 1f;
+            case EquipmentRarity.Uncommon: return 1.25f;
+            case EquipmentRarity.Rare: return 1.5f;
+            case EquipmentRarity.Epic: return 2f;
+            case EquipmentRarity.Legendary: return 2.5f;
+            case EquipmentRarity.Mythical: return 3f;
+            case EquipmentRarity.Ultimate: return 4f;
+            case EquipmentRarity.Godly: return 5f;
+            default: return 1f;
+        }
+    }
+
     public int GetNumberOfStats(EquipmentRarity rarity)
     {
         switch (rarity)
@@ -30,11 +50,17 @@ public class EquipmentStatGenerationNumber
     }
 }
 
-public static class EquipmentFactory
+public interface IEquipmentFactory
+{
+    Equipment GetLootEquipment(Equipment baseEquipment, int level, EquipmentRarity rarity, EquipmentGenerationModifier modifier);
+    Equipment GetCraftedEquipment(EquipmentRecipe recipe, int level, EquipmentRarity rarity);
+}
+
+public class EquipmentFactory : IEquipmentFactory
 {
     // overload for creating equipment without a base, generates random stats based on level, generation modifier and rarity
     // this is used for rewards and loot drops
-    public static Equipment GetLootEquipment(Equipment baseEquipment, int level, EquipmentRarity rarity, EquipmentGenerationModifier modifier)
+    public Equipment GetLootEquipment(Equipment baseEquipment, int level, EquipmentRarity rarity, EquipmentGenerationModifier modifier)
     {
         Equipment newEquipment = ScriptableObject.Instantiate(baseEquipment);
         newEquipment.SetLevel(level);
@@ -46,7 +72,7 @@ public static class EquipmentFactory
         return newEquipment;
     }
 
-    public static Equipment GetCraftedEquipment(EquipmentRecipe recipe, int level, EquipmentRarity rarity)
+    public Equipment GetCraftedEquipment(EquipmentRecipe recipe, int level, EquipmentRarity rarity)
     {
         Equipment craftedEquipment = ScriptableObject.Instantiate(recipe.BaseEquipment);
         craftedEquipment.SetLevel(level);
@@ -58,12 +84,12 @@ public static class EquipmentFactory
     
     private static void GenerateStats(Equipment equipment, int level, EquipmentRarity rarity)
     {
-        int numStats = new EquipmentStatGenerationNumber().GetNumberOfStats(rarity);
+        int numStats = new EquipmentStatGeneration().GetNumberOfStats(rarity);
         for (int i = 0; i < numStats; i++)
         {
             Stat stat = StatDatabase.Instance.GetRandomStat(); // no check for duplicates is intentional
             float baseValue = stat.BaseValue;
-            float modifier = new EquipmentStatModifier().GetModifier(rarity);
+            float modifier = new EquipmentStatGeneration().GetModifier(rarity);
             float randomVariation = GetRandomVariation(baseValue);
             float finalValue = (baseValue + randomVariation) * modifier * LevelModifier(1, level);
             equipment.Stats.AddStatValue(stat, finalValue); // add stat to equipment, is AddStatValue in case the random stat is the same as a previous one

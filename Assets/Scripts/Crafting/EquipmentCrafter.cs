@@ -29,7 +29,7 @@ public class EquipmentCrafter : MonoBehaviour
         level = 1;
         rarity = EquipmentRarity.Common;
     }
-    public void CraftEquipment()
+    public void CraftEquipment(IEquipmentFactory factory)
     {
         if (recipe == null)
         {
@@ -44,7 +44,7 @@ public class EquipmentCrafter : MonoBehaviour
             Debug.LogError("Not enough materials to craft the equipment.");
             return;
         }
-        Equipment newEquipment = EquipmentFactory.GetCraftedEquipment(recipe, level, rarity);
+        Equipment newEquipment = factory.GetCraftedEquipment(recipe, level, rarity);
         if (newEquipment != null)
         {
             equipmentInventory.AddEquipment(newEquipment);

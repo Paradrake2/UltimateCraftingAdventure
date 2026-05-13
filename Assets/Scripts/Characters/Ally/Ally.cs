@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Ally", menuName = "Scriptable Objects/AllyCustom")]
-public class Ally : ScriptableObject
+public class Ally : ScriptableObject, IStatusEffectTarget, IHealable
 {
     [SerializeField] private string allyName;
     [SerializeField] private Sprite icon;
@@ -27,6 +27,14 @@ public class Ally : ScriptableObject
     public float XPToNextLevel => xpToNextLevel;
     public float XPGrowthRate => xpGrowthRate;
 
+    // IStatusEffectTarget
+    public StatusEffectManager StatusEffects => combatStats?.StatusEffects;
+
+    // IHealable
+    public double CurrentHealth => combatStats?.CurrentHealth ?? 0d;
+    public double MaxHealth => combatStats?.GetMaxHealth() ?? 0d;
+    public void Heal(double amount) => combatStats?.Heal(amount);
+
     public void Initialize(string name, Sprite newIcon, StatCollection newStats, AllyArchetype newArchetype)
     {
         allyName = name;
@@ -37,7 +45,7 @@ public class Ally : ScriptableObject
         equipmentInventory ??= new AllyEquipmentInventory();
         runeInventory ??= new AllyRuneInventory();
         combatStats ??= new AllyCombat();
-        combatStats.Initialize(stats);
+        combatStats.Initialize(stats, this);
 
         level = 1;
         xp = 0f;
@@ -289,6 +297,14 @@ public class Ally : ScriptableObject
         if (ctx.RetaliationInstances != null && ctx.RetaliationInstances.Count > 0
             && attacker?.CombatStats != null && attacker.CombatStats.IsAlive)
             attacker.CombatStats.TakeDamage(ctx.RetaliationInstances);
+        // Thorns: deal flat physical damage back to the attacker, unaffected by damage multipliers.
+        float thorns = stats.GetStatValue("Thorns");
+        if (thorns > 0f && attacker?.CombatStats != null && attacker.CombatStats.IsAlive)
+        {
+            float thornsMultiplier = stats.GetStatValue("ThornsMultiplier");
+            double thornsDamage = thorns * thornsMultiplier;
+            attacker.CombatStats.TakeDamage(new List<DamageInstance> { new DamageInstance(DamageType.Physical, thornsDamage) });
+        }
 
         // If the ally just died, give the utility rune a chance to intervene (e.g. resurrection).
         if (!combatStats.IsAlive)

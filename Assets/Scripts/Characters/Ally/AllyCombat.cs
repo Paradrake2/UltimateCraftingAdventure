@@ -21,11 +21,15 @@ public class AllyCombat
     [SerializeField] private int maxTargets = 2;
     [SerializeField] private List<AllySkillSlot> skillSlots = new List<AllySkillSlot>();
 
+    private Ally _owner;
+    private StatusEffectManager _statusEffects;
+
     public StatCollection StatCollection => statCollection;
     public float BaseAttackSpeed => baseAttackSpeed;
     public AttackTargeting AttackTargeting => attackTargeting;
     public int MaxTargets => maxTargets;
     public IReadOnlyList<AllySkillSlot> SkillSlots => skillSlots;
+    public StatusEffectManager StatusEffects => _statusEffects;
     public double CurrentHealth
     {
         get => currentHealth;
@@ -38,21 +42,38 @@ public class AllyCombat
     }
     public bool IsAlive => CurrentHealth > 0d;
 
-    public void Initialize(StatCollection newStats)
+    public void Initialize(StatCollection newStats, Ally owner = null)
     {
         // Update in-place so any cached references to statCollection remain valid.
         statCollection.OverwriteFrom(newStats ?? new StatCollection());
+        if (owner != null) _owner = owner;
     }
 
     public void ResetForCombat()
     {
         CurrentHealth = GetMaxHealth();
         CurrentBarrier = GetMaxBarrier();
+        _statusEffects = new StatusEffectManager(_owner, statCollection);
         if (skillSlots != null)
         {
             for (int i = 0; i < skillSlots.Count; i++)
                 skillSlots[i]?.ResetCooldown(statCollection);
         }
+    }
+
+    /// <summary>
+    /// Ticks all active status effects. Call this once per combat frame alongside skill ticks.
+    /// </summary>
+    public void TickStatusEffects(float deltaTime)
+    {
+        _statusEffects?.Tick(deltaTime);
+    }
+
+    /// <summary>Restores <paramref name="amount"/> health, clamped to max health.</summary>
+    public void Heal(double amount)
+    {
+        if (!IsAlive || amount <= 0d) return;
+        CurrentHealth = System.Math.Min(CurrentHealth + amount, GetMaxHealth());
     }
 
     public float GetAttackInterval()

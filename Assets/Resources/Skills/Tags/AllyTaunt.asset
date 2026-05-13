@@ -9,9 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27fa8605ddf7110458b8d0bd71541e89, type: 3}
-  m_Name: WindDamage
+  m_Script: {fileID: 11500000, guid: f865d95a1bd3da84b8b89d7a58f5d482, type: 3}
+  m_Name: AllyTaunt
   m_EditorClassIdentifier: 
-  statName: WindDamage
-  statType: 0
-  baseValue: 1

@@ -9,7 +9,7 @@ public enum XPDistributionMethod
 }
 
 [CreateAssetMenu(fileName = "Enemy", menuName = "Scriptable Objects/Enemy")]
-public class Enemy : ScriptableObject
+public class Enemy : ScriptableObject, IStatusEffectTarget, IHealable
 {
 	[SerializeField] private string enemyName;
 	[SerializeField] private Sprite icon;
@@ -23,6 +23,14 @@ public class Enemy : ScriptableObject
 	public EnemyCombat CombatStats => combatStats;
 	public EnemyLootTable LootTable => lootTable;
 	public float XPRewardAmount => XPReward;
+
+	// IStatusEffectTarget
+	public StatusEffectManager StatusEffects => combatStats?.StatusEffects;
+
+	// IHealable
+	public double CurrentHealth => combatStats?.CurrentHealth ?? 0d;
+	public double MaxHealth => combatStats?.GetMaxHealth() ?? 0d;
+	public void Heal(double amount) => combatStats?.Heal(amount);
 
 
 	public void Initialize(string newEnemyName, Sprite newIcon, StatCollection newStats, EnemyLootTable table)
@@ -73,7 +81,8 @@ public class Enemy : ScriptableObject
 		{
 			EquipmentRarity rarity = LootGeneration.RollRarity(luck);
 			EquipmentGenerationModifier modifier = LootGeneration.GetGenerationModifier(map);
-			Equipment dropped = EquipmentFactory.GetLootEquipment(baseEquipment, allyLevel, rarity, modifier);
+			IEquipmentFactory equipmentFactory = new EquipmentFactory();
+			Equipment dropped = equipmentFactory.GetLootEquipment(baseEquipment, allyLevel, rarity, modifier);
 			EquipmentInventory.Instance.AddEquipment(dropped);
 			Debug.Log($"{EnemyName} dropped {dropped.EquipmentName} ({rarity})");
 		}

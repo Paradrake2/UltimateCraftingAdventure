@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Barrier
   m_EditorClassIdentifier: 
   statName: Barrier
-  statType: 0
+  statType: 1
   baseValue: 1
+  icon: {fileID: 0}
+  displayOrder: 3

@@ -26,31 +26,7 @@ public enum EquipmentRarity
     Godly
 }
 
-// used for equipment generation
-[System.Serializable]
-public class EquipmentStatModifier
-{
-    public EquipmentRarity rarity; // added for reference I think, don't really remember but it might be useful for something
-    public float GetModifier(EquipmentRarity rarity)
-    {
-        switch (rarity)
-        {
-            case EquipmentRarity.Common: return 1f;
-            case EquipmentRarity.Uncommon: return 1.25f;
-            case EquipmentRarity.Rare: return 1.5f;
-            case EquipmentRarity.Epic: return 2f;
-            case EquipmentRarity.Legendary: return 2.5f;
-            case EquipmentRarity.Mythical: return 3f;
-            case EquipmentRarity.Ultimate: return 4f;
-            case EquipmentRarity.Godly: return 5f;
-            default: return 1f;
-        }
-    }
-    public void SetRarity(EquipmentRarity newRarity)
-    {
-        rarity = newRarity;
-    }
-}
+
 
 [CreateAssetMenu(fileName = "Equipment", menuName = "Scriptable Objects/Equipment")]
 public class Equipment : ScriptableObject
@@ -62,7 +38,6 @@ public class Equipment : ScriptableObject
     [SerializeField] private EquipmentType equipmentType;
     [SerializeField] private DamageType weaponDamageType = DamageType.Physical;
     [SerializeField] private List<EquipmentTag> tags = new List<EquipmentTag>();
-    [SerializeField] private EquipmentStatModifier statModifier = new EquipmentStatModifier();
     [SerializeField] private EquipmentRarity rarity;
     [SerializeField] private EquipmentTag tag;
     [SerializeField] private string id;
@@ -82,7 +57,6 @@ public class Equipment : ScriptableObject
     public DamageType WeaponDamageType => weaponDamageType;
     public IReadOnlyList<EquipmentTag> Tags => tags;
     public EquipmentRarity Rarity => rarity;
-    public EquipmentStatModifier StatModifier => statModifier;
     public EquipmentTag Tag => tag;
     public string ID => id;
     public IReadOnlyList<EquipmentEnchantmentHolder> Enchantments => enchantments;
@@ -108,7 +82,6 @@ public class Equipment : ScriptableObject
     {
         stats ??= new StatCollection();
         tags ??= new List<EquipmentTag>();
-        statModifier ??= new EquipmentStatModifier();
         enchantments ??= new List<EquipmentEnchantmentHolder>();
         augments ??= new List<EquipmentAugmentHolder>();
     }

@@ -56,5 +56,14 @@ public class StatDatabase : ScriptableObject
             return instance;
         }
     }
-    
+    [ContextMenu("Refresh Stats")]
+    private void RefreshStats()
+    {
+        const string resourcePath = "Stats/";
+        Stat[] loadedStats = Resources.LoadAll<Stat>(resourcePath);
+        stats.Clear();
+        stats.AddRange(loadedStats);
+        stats.Sort((a, b) => string.Compare(a.StatName, b.StatName, StringComparison.Ordinal));
+        Debug.Log($"Loaded {stats.Count} stats from Resources/{resourcePath}");
+    }
 }

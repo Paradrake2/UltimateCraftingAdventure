@@ -10,8 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27fa8605ddf7110458b8d0bd71541e89, type: 3}
-  m_Name: WaterDamage
+  m_Name: ThornsMultiplier
   m_EditorClassIdentifier: 
-  statName: WaterDamage
+  statName: ThornMultiplier
   statType: 0
   baseValue: 1
+  icon: {fileID: 0}
+  displayOrder: 9
