@@ -311,30 +311,84 @@ public class AllyCombat
     }
 
     /// <summary>
-    /// Replaces all skill slots with slots built from the provided skills.
-    /// Called by <see cref="AllyFactory"/> during ally creation.
+    /// Creates typed skill slots from archetype default entries.
+    /// Always call this during ally initialisation (from <see cref="Ally.Initialize"/>).
     /// </summary>
-    public void SetSkills(IReadOnlyList<AllySkill> skills)
+    public void InitializeSlots(IReadOnlyList<DefaultSkillEntry> entries)
     {
         skillSlots ??= new List<AllySkillSlot>();
         skillSlots.Clear();
-        if (skills == null) return;
+        if (entries == null) return;
+        for (int i = 0; i < entries.Count; i++)
+        {
+            var entry = entries[i];
+            if (entry == null) continue;
+            var slot = new AllySkillSlot(entry.SlotType);
+            if (entry.DefaultSkill != null) slot.SetSkill(entry.DefaultSkill);
+            skillSlots.Add(slot);
+        }
+    }
+
+    /// <summary>
+    /// Assigns skills from a flat list to their matching typed slots.
+    /// Used by the save system to restore a saved skill loadout.
+    /// Each skill is matched to a slot by <see cref="AllySkill.SlotType"/>; unmatched skills are skipped.
+    /// </summary>
+    public void SetSkills(IReadOnlyList<AllySkill> skills)
+    {
+        if (skills == null || skillSlots == null) return;
         for (int i = 0; i < skills.Count; i++)
         {
-            if (skills[i] != null)
-                skillSlots.Add(new AllySkillSlot(skills[i]));
+            AllySkill skill = skills[i];
+            if (skill == null) continue;
+            for (int j = 0; j < skillSlots.Count; j++)
+            {
+                if (skillSlots[j] != null && skillSlots[j].SlotType == skill.SlotType)
+                {
+                    skillSlots[j].SetSkill(skill);
+                    break;
+                }
+            }
         }
     }
 
     /// <summary>
     /// Replaces the skill in the given slot. Pass <c>null</c> to clear the slot.
-    /// Returns <c>false</c> if <paramref name="slotIndex"/> is out of range.
+    /// Returns <c>false</c> if <paramref name="slotIndex"/> is out of range or the skill's
+    /// <see cref="AllySkill.SlotType"/> does not match the slot's type.
     /// </summary>
     public bool SetSkillInSlot(int slotIndex, AllySkill skill)
     {
         if (skillSlots == null || slotIndex < 0 || slotIndex >= skillSlots.Count) return false;
-        skillSlots[slotIndex] = skill != null ? new AllySkillSlot(skill) : new AllySkillSlot();
+        var slot = skillSlots[slotIndex];
+        if (skill != null && !slot.CanAccept(skill, out _)) return false;
+        slot.SetSkill(skill);
         return true;
+    }
+
+    /// <summary>
+    /// Restores a skill directly into the first slot whose type matches <paramref name="slotType"/>,
+    /// bypassing <see cref="AllySkillSlot.CanAccept"/> compatibility checks.
+    /// Called exclusively by the save system to avoid relying on the skill asset's own SlotType field,
+    /// which may not be set correctly on assets created before the typed-slot system was introduced.
+    /// </summary>
+    internal void RestoreSkillInSlot(SkillSlotType slotType, AllySkill skill)
+    {
+        if (skill == null) return;
+        skillSlots ??= new List<AllySkillSlot>();
+        for (int i = 0; i < skillSlots.Count; i++)
+        {
+            if (skillSlots[i] != null && skillSlots[i].SlotType == slotType)
+            {
+                skillSlots[i].SetSkill(skill);
+                return;
+            }
+        }
+        // No matching slot — create one so saved skills are never lost even if
+        // the archetype's DefaultSkillEntries change or the registry is incomplete.
+        var newSlot = new AllySkillSlot(slotType);
+        newSlot.SetSkill(skill);
+        skillSlots.Add(newSlot);
     }
 
     private Enemy GetRandomEnemy(IReadOnlyList<Enemy> enemies)

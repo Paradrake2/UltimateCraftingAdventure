@@ -9,6 +9,9 @@ public abstract class AllySkill : ScriptableObject
 {
     [SerializeField] private float cooldown = 5f;
 
+    [Tooltip("Which skill slot type this skill can be placed in.")]
+    [SerializeField] private SkillSlotType slotType;
+
     [Tooltip("Tags used by archetype restrictions to allow or forbid this skill.")]
     [SerializeField] private List<SkillTag> tags = new List<SkillTag>();
 
@@ -20,6 +23,7 @@ public abstract class AllySkill : ScriptableObject
     [SerializeField] private List<SkillDamageEntry> damageEntries = new List<SkillDamageEntry>();
 
     public float Cooldown => cooldown;
+    public SkillSlotType SlotType => slotType;
     public IReadOnlyList<SkillTag> Tags => tags;
     public bool ScalesWithAttackSpeed => scalesWithAttackSpeed;
 

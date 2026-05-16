@@ -155,6 +155,7 @@ public static class SaveSystem
             id                 = e.ID,
             equipmentName      = e.EquipmentName,
             equipmentType      = (int)e.EquipmentType,
+            weaponDamageType   = (int)e.WeaponDamageType,
             rarity             = (int)e.Rarity,
             level              = e.Level,
             reinforcementLevel = e.ReinforcementLevel,
@@ -208,6 +209,7 @@ public static class SaveSystem
             data.id,
             data.equipmentName,
             (EquipmentType)data.equipmentType,
+            (DamageType)data.weaponDamageType,
             (EquipmentRarity)data.rarity,
             data.level,
             data.reinforcementLevel,
@@ -275,7 +277,7 @@ public static class SaveSystem
         if (ally.CombatStats?.SkillSlots != null)
             foreach (var slot in ally.CombatStats.SkillSlots)
                 if (slot?.Skill != null)
-                    data.skillNames.Add(slot.Skill.name);
+                    data.skillSlots.Add(new SkillSlotSaveData { slotType = (int)slot.SlotType, skillName = slot.Skill.name });
 
         var inv = ally.EquipmentInventory;
         if (inv != null)
@@ -318,21 +320,19 @@ public static class SaveSystem
         var ally = Ally.CreateRuntime(data.allyName, archetype, icon, stats);
         ally.RestoreProgress(data.xp, data.level, data.xpToNextLevel, stats);
 
-        if (data.skillNames != null && data.skillNames.Count > 0)
+        if (data.skillSlots != null && data.skillSlots.Count > 0)
         {
-            var resolvedSkills = new List<AllySkill>();
-            foreach (var skillName in data.skillNames)
+            foreach (var ss in data.skillSlots)
             {
-                var skill = registry?.FindSkill(skillName);
-                if (skill != null)
-                    resolvedSkills.Add(skill);
-                else
-                    Debug.LogWarning($"[SaveSystem] Skill not found in registry: '{skillName}'. Add it to GameAssetRegistry.");
+                if (ss == null || string.IsNullOrEmpty(ss.skillName)) continue;
+                var skill = registry?.FindSkill(ss.skillName);
+                if (skill == null)
+                {
+                    Debug.LogWarning($"[SaveSystem] Skill not found in registry: '{ss.skillName}'. Add it to GameAssetRegistry.");
+                    continue;
+                }
+                ally.CombatStats?.RestoreSkillInSlot((SkillSlotType)ss.slotType, skill);
             }
-            // Only override if we actually resolved at least one skill.
-            // Leaving it alone preserves the archetype defaults set by CreateRuntime.
-            if (resolvedSkills.Count > 0)
-                ally.CombatStats?.SetSkills(resolvedSkills);
         }
 
         if (data.equipmentInventory != null)
@@ -373,6 +373,7 @@ public static class SaveSystem
             ally.RuneInventory.RestoreSlots(unlocked, runes);
         }
 
+        ally.RecalculateStats();
         return ally;
     }
 

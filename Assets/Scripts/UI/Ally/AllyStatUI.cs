@@ -23,7 +23,7 @@ public class AllyStatUI : MonoBehaviour
         foreach (Transform child in statUIContainer)
             Destroy(child.gameObject);
         if (ally == null || ally.CombatStats == null) return;
-        StatCollection stats = ally.Stats;
+        StatCollection stats = ally.IsInCombat ? ally.CombatStats.StatCollection : ally.Stats;
         var sorted = new System.Collections.Generic.List<StatValue>(stats.Stats);
         sorted.Sort((a, b) =>
         {

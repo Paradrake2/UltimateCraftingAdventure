@@ -22,6 +22,7 @@ public class EquipmentSaveData
     public string id;
     public string equipmentName;
     public int equipmentType;       // cast to/from EquipmentType
+    public int weaponDamageType;    // cast to/from DamageType
     public int rarity;              // cast to/from EquipmentRarity
     public int level;
     public int reinforcementLevel;
@@ -50,6 +51,13 @@ public class ItemQuantitySaveData
 }
 
 [Serializable]
+public class SkillSlotSaveData
+{
+    public int slotType;    // cast to/from SkillSlotType
+    public string skillName;
+}
+
+[Serializable]
 public class AllySaveData
 {
     public string allyName;
@@ -59,7 +67,7 @@ public class AllySaveData
     public int level;
     public float xpToNextLevel;
     public List<StatValueSaveData> stats = new List<StatValueSaveData>();
-    public List<string> skillNames = new List<string>();
+    public List<SkillSlotSaveData> skillSlots = new List<SkillSlotSaveData>();
     public AllyEquipmentSaveData equipmentInventory = new AllyEquipmentSaveData();
     public AllyRuneSaveData runeInventory = new AllyRuneSaveData();
 }

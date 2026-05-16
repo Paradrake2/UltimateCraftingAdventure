@@ -28,7 +28,7 @@ public class GameSaveManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        // SaveSystem.Save(); // Optional: Auto-save on quit. Uncomment if desired. Currently commented for testing purposes
+        SaveSystem.Save(); // Optional: Auto-save on quit. Uncomment if desired. Currently uncommented for testing purposes
     }
 
     public void SaveGame() => SaveSystem.Save();

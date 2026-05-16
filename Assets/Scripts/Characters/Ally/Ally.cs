@@ -53,8 +53,8 @@ public class Ally : ScriptableObject, IStatusEffectTarget, IHealable
         xpGrowthRate = 1.1f;
 
         // Apply archetype default skills if none are set yet (safety net for any creation path)
-        if (archetype != null && combatStats.SkillSlots.Count == 0 && archetype.DefaultSkills != null && archetype.DefaultSkills.Count > 0)
-            combatStats.SetSkills(archetype.DefaultSkills);
+        if (archetype != null && archetype.DefaultSkillEntries != null && archetype.DefaultSkillEntries.Count > 0)
+            combatStats.InitializeSlots(archetype.DefaultSkillEntries);
     }
 
     public static Ally CreateRuntime(string name, AllyArchetype archetype, Sprite icon = null, StatCollection stats = null)
@@ -116,6 +116,7 @@ public class Ally : ScriptableObject, IStatusEffectTarget, IHealable
             return false;
         }
 
+        RecalculateStats();
         return true;
     }
 
@@ -183,6 +184,14 @@ public class Ally : ScriptableObject, IStatusEffectTarget, IHealable
             return false;
         }
 
+        // Validate slot type compatibility.
+        if (newSkill != null && combatStats.SkillSlots != null
+            && slotIndex >= 0 && slotIndex < combatStats.SkillSlots.Count
+            && !combatStats.SkillSlots[slotIndex].CanAccept(newSkill, out failureReason))
+        {
+            return false;
+        }
+
         if (newSkill != null && archetype != null && !archetype.CanEquipSkill(newSkill, out failureReason))
         {
             return false;
@@ -199,7 +208,7 @@ public class Ally : ScriptableObject, IStatusEffectTarget, IHealable
 
     public void RecalculateStats()
     {
-        StatCollection merged = stats.Clone();
+        StatCollection merged = archetype != null ? archetype.BaseStats.Clone() : stats.Clone();
 
         if (equipmentInventory != null)
         {
@@ -213,6 +222,7 @@ public class Ally : ScriptableObject, IStatusEffectTarget, IHealable
             }
         }
 
+        stats.OverwriteFrom(merged);
         combatStats?.Initialize(merged);
     }
     public void AddXP(float amount)

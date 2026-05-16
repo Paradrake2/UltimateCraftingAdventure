@@ -51,7 +51,7 @@ public class AllyPreset : ScriptableObject
         Sprite icon = iconOverride != null ? iconOverride : archetype.Icon;
 
         ally = Ally.CreateRuntime(allyName, archetype, icon, stats);
-        ally.CombatStats?.SetSkills(archetype.DefaultSkills);
+        ally.CombatStats?.InitializeSlots(archetype.DefaultSkillEntries);
 
         TryEquipStartingEquipment(ally, startingEquipment);
 

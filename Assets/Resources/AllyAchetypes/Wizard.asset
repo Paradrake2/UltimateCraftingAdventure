@@ -28,8 +28,9 @@ MonoBehaviour:
       value: 0.9
     - stat: {fileID: 11400000, guid: 8c575f94fcaf6a14eb71786ea86a4fa5, type: 2}
       value: 10
-  defaultSkills:
-  - {fileID: 11400000, guid: c9e2a23b3b3885444a7e774b48ef4d19, type: 2}
+  defaultSkillEntries:
+  - slotType: 0
+    defaultSkill: {fileID: 11400000, guid: c9e2a23b3b3885444a7e774b48ef4d19, type: 2}
   allowedSkillTags:
   - {fileID: 11400000, guid: 687640dbdacad07469f6710b96c93113, type: 2}
   - {fileID: 11400000, guid: c94ec85639b8b2b4783bff51e29789f4, type: 2}

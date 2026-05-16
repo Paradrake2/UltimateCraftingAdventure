@@ -147,6 +147,6 @@ public static class AllyFactory
     private static void ApplyDefaultSkills(Ally ally)
     {
         if (ally == null || ally.Archetype == null || ally.CombatStats == null) return;
-        ally.CombatStats.SetSkills(ally.Archetype.DefaultSkills);
+        ally.CombatStats.InitializeSlots(ally.Archetype.DefaultSkillEntries);
     }
 }

@@ -10,8 +10,8 @@ public class AllyArchetype : ScriptableObject
     [SerializeField] private StatCollection baseStats = new StatCollection();
 
     [Header("Skills")]
-    [Tooltip("Skills automatically given to allies of this archetype when created.")]
-    [SerializeField] private List<AllySkill> defaultSkills = new List<AllySkill>();
+    [Tooltip("Typed skill slots for this archetype. Add one entry per slot type with an optional default skill.")]
+    [SerializeField] private List<DefaultSkillEntry> defaultSkillEntries = new List<DefaultSkillEntry>();
 
     [Tooltip("Skill tags this archetype is allowed to use. Leave empty to allow all skills.")]
     [SerializeField] private List<SkillTag> allowedSkillTags = new List<SkillTag>();
@@ -20,7 +20,7 @@ public class AllyArchetype : ScriptableObject
     public IReadOnlyList<AllyRestrictionRule> Rules => rules;
     public Sprite Icon => icon;
     public StatCollection BaseStats => baseStats;
-    public IReadOnlyList<AllySkill> DefaultSkills => defaultSkills;
+    public IReadOnlyList<DefaultSkillEntry> DefaultSkillEntries => defaultSkillEntries;
     public IReadOnlyList<SkillTag> AllowedSkillTags => allowedSkillTags;
 
     /// <summary>

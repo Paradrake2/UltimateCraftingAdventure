@@ -228,6 +228,7 @@ public class Equipment : ScriptableObject
         string savedId,
         string savedName,
         EquipmentType savedType,
+        DamageType savedWeaponDamageType,
         EquipmentRarity savedRarity,
         int savedLevel,
         int savedReinforcementLevel,
@@ -239,6 +240,7 @@ public class Equipment : ScriptableObject
         id                 = savedId;
         equipmentName      = savedName;
         equipmentType      = savedType;
+        weaponDamageType   = savedWeaponDamageType;
         rarity             = savedRarity;
         level              = Mathf.Max(1, savedLevel);
         reinforcementLevel = Mathf.Clamp(savedReinforcementLevel, 0, maxReinforcementLevel);

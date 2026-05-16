@@ -53,7 +53,9 @@ MonoBehaviour:
   enchantments:
   - {fileID: 0}
   augments: []
-  archetypes: []
+  archetypes:
+  - {fileID: 11400000, guid: f75e85c2a606dcd438e502229aa66b98, type: 2}
+  - {fileID: 11400000, guid: c78e8de5d489556458c23909f6b63c02, type: 2}
   skills:
   - {fileID: 11400000, guid: 1f63876db4d54714ba70a07ae8660456, type: 2}
   - {fileID: 11400000, guid: c9e2a23b3b3885444a7e774b48ef4d19, type: 2}
